@@ -1,6 +1,7 @@
 // src/pages/index.tsx
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image"; // <=== IMPORT KOMPONEN IMAGE
 import perfumeData from "../../data/perfumeData"; // Pastikan path ini benar
 
 // ==== URL GAMBAR ANDA ====
@@ -60,6 +61,8 @@ export default function Home({ perfumes }: HomeProps) {
               href="#hero"
               className="text-3xl font-bold text-amber-300 hover:text-amber-200 transition-colors duration-200 font-serif" // Font serif untuk logo
             >
+              {" "}
+              {/* Ukuran lebih besar, warna amber lebih soft */}
               EVOSTE
             </Link>
             <nav>
@@ -183,7 +186,7 @@ export default function Home({ perfumes }: HomeProps) {
                 </li>
                 <li className="flex items-center text-lg">
                   <span className="text-amber-500 mr-3 text-2xl">★</span>
-                  BPOM-ready & trusted ingredients
+                  BPOM-ready &amp; trusted ingredients
                 </li>
               </ul>
             </div>
@@ -217,9 +220,11 @@ export default function Home({ perfumes }: HomeProps) {
               </p>
               {/* Image of perfume bottles */}
               <div className="mt-8 text-center">
-                <img
+                <Image // <=== DIGANTI KE KOMPONEN IMAGE
                   src={PERFUME_BOTTLES_GRID_URL}
                   alt="EVOSTE Perfume Bottles"
+                  width={384} // <=== GANTI DENGAN LEBAR ASLI GAMBAR INI (misal: 1200)
+                  height={250} // <=== GANTI DENGAN TINGGI ASLI GAMBAR INI (misal: 800)
                   className="w-full h-auto max-w-sm mx-auto rounded-lg shadow-md border border-amber-500/30" // Border keemasan transparan
                 />
               </div>
@@ -250,9 +255,11 @@ export default function Home({ perfumes }: HomeProps) {
                       {/* **KODE UNTUK GAMBAR INDIVIDUAL PARFUM** */}
                       {perfume.imageUrl && (
                         <div className="mb-4 flex justify-center">
-                          <img
+                          <Image // <=== DIGANTI KE KOMPONEN IMAGE
                             src={perfume.imageUrl}
                             alt={perfume.type}
+                            width={144} // <=== Ini sesuai dengan w-36 (144px)
+                            height={144} // <=== Ini sesuai dengan h-36 (144px)
                             className="w-36 h-36 object-contain mx-auto"
                           />
                         </div>
@@ -304,9 +311,11 @@ export default function Home({ perfumes }: HomeProps) {
                   {/* Font serif, warna amber lebih soft */}
                   Explore Our Fragrance Notes
                 </h3>
-                <img
+                <Image // <=== DIGANTI KE KOMPONEN IMAGE
                   src={FRAGRANCE_NOTES_GRID_URL}
                   alt="Fragrance Notes Grid"
+                  width={896} // <=== GANTI DENGAN LEBAR ASLI GAMBAR INI (misal: 1920)
+                  height={500} // <=== GANTI DENGAN TINGGI ASLI GAMBAR INI (misal: 1080)
                   className="w-full max-w-4xl mx-auto rounded-lg shadow-lg border border-amber-500/30" // Border keemasan transparan
                 />
                 <p className="text-sm text-neutral-300 mt-4">
@@ -338,9 +347,10 @@ export default function Home({ perfumes }: HomeProps) {
                 <p className="italic text-neutral-300">
                   {" "}
                   {/* Warna teks lebih terang */}
-                  "I've never been so emotionally connected to a fragrance
-                  before I wore Every scent of your memory. Just by how good and
-                  solid it was since we first met."
+                  &quot;I&apos;ve never been so emotionally connected to a
+                  fragrance before I wore &quot;Every scent of your
+                  memory.&quot; Just by how good and solid it was since we first
+                  met.&quot;
                 </p>
               </div>
               <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-left border-l-4 border-amber-500/50">
@@ -352,10 +362,11 @@ export default function Home({ perfumes }: HomeProps) {
                 <p className="italic text-neutral-300">
                   {" "}
                   {/* Warna teks lebih terang */}
-                  "I bought Citrine Flame. It's clean, citrusy, and has a slight
-                  woody dry down. It makes me wish the projection lasted just a
-                  bit longer, but for this price, it's a steal. I love it more
-                  than my Creed Aventus or Dior Sauvage. 10/10."
+                  &quot;I bought Citrine Flame. It&apos;s clean, citrusy, and
+                  has a slight woody dry down. It makes me wish the projection
+                  lasted just a bit longer, but for this price, it&apos;s a
+                  steal. I love it more than my &quot;Creed Aventus&quot; or
+                  &quot;Dior Sauvage&quot;. 10/10.&quot;
                 </p>
               </div>
             </div>
@@ -451,7 +462,7 @@ export default function Home({ perfumes }: HomeProps) {
                       fill="currentColor"
                       className="text-white"
                     >
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.25.148 4.745 1.942 5.093 5.093.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.25-1.942 4.745-5.093 5.093-.787.036-1.07.05-4.85.05s-4.063-.014-4.85-.07c-3.25-.148-4.745-1.942-5.093-5.093-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.25 1.942-4.745 5.093-5.093.787-.036 1.07-.05 4.85-.05zm0-2.163c-3.267 0-3.693.013-4.994.072-4.352.199-6.393 2.502-6.592 6.592-.059 1.3-.072 1.727-.072 4.994s.013 3.693.072 4.994c.199 4.352 2.502 6.393 6.592 6.592 1.3.059 1.727.072 4.994.072s3.693-.013 4.994-.072c4.352-.199 6.393-2.502 6.592-6.592.059-1.3.072-1.727.072-4.994s-.013-3.693-.072-4.994c-.199-4.352-2.502-6.393-6.592-6.592-1.3-.059-1.727-.072-4.994-.072zm0 5.838c-3.462 0-6.262 2.8-6.262 6.262s2.8 6.262 6.262 6.262 6.262-2.8 6.262-6.262-2.8-6.262-6.262-6.262zm0 10.288c-2.222 0-4.026-1.804-4.026-4.026s1.804-4.026 4.026-4.026 4.026 1.804 4.026 4.026-1.804 4.026-4.026 4.026zm6.398-11.815c-.97-.042-1.765-.333-2.268-.908-.503-.574-.707-1.366-.749-2.336-.042-.97.186-1.765.707-2.268.521-.503 1.316-.707 2.268-.749.952-.042 1.747.186 2.268.707.521.521.725 1.316.749 2.268.024.952-.199 1.747-.707 2.268-.508.521-1.303.725-2.268.749z"></path>
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.25.148 4.745 1.942 5.093 5.093.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.25-1.942 4.745-5.093 5.093-.787.036-1.07.05-4.85.05s-4.063-.014-4.85-.07c-3.25-.148-4.745-1.942-5.093-5.093-.058-1.266-.07-1.646-.07-4.85s.013-3.584.072-4.85c.199-4.352 2.502-6.393 6.592-6.592.059-1.3.072-1.727.072-4.994s-.013-3.693-.072-4.994c-.199-4.352-2.502-6.393-6.592-6.592-1.3-.059-1.727-.072-4.994-.072zm0 5.838c-3.462 0-6.262 2.8-6.262 6.262s2.8 6.262 6.262 6.262 6.262-2.8 6.262-6.262-2.8-6.262-6.262-6.262zm0 10.288c-2.222 0-4.026-1.804-4.026-4.026s1.804-4.026 4.026-4.026 4.026 1.804 4.026 4.026-1.804 4.026-4.026 4.026zm6.398-11.815c-.97-.042-1.765-.333-2.268-.908-.503-.574-.707-1.366-.749-2.336-.042-.97.186-1.765.707-2.268.521-.503 1.316-.707 2.268-.749.952-.042 1.747.186 2.268.707.521.521.725 1.316.749 2.268.024.952-.199 1.747-.707 2.268-.508.521-1.303.725-2.268.749z"></path>
                     </svg>
                     Instagram
                   </a>

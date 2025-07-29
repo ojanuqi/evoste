@@ -11,8 +11,7 @@ const perfumeData = [
     variant1: "Diptyque Eau Capitale",
     variant2: "Jo Malone Peony & Blush Suede",
     variant3: "-",
-    // Tambahkan ini:
-    imageUrl: "../images/ivory-bloom.jpg", // <--- TAMBAHAN INI
+    imageUrl: "/images/ivory-bloom.jpg", // <--- PERBAIKI INI
   },
   {
     no: 2,
@@ -25,10 +24,8 @@ const perfumeData = [
     variant1: "Creed Aventus",
     variant2: "Dior Sauvage",
     variant3: "-",
-    // Tambahkan ini:
-    imageUrl: "../images/citrine-flame.jpg", // <--- TAMBAHAN INI
+    imageUrl: "/images/citrine-flame.jpg", // <--- PERBAIKI INI
   },
-  // ... lanjutkan untuk parfum lainnya (Midnight Cherry, Oud Légendaire, Or Du Soir)
   {
     no: 3,
     type: "MIDNIGHT CHERRY",
@@ -37,10 +34,7 @@ const perfumeData = [
     topNotes: "Cherry Liqueur, Bitter Almond, Bergamot",
     middleNotes: "Turkish Rose, Jasmine Sambac",
     baseNotes: "Vanilla, Cedarwood",
-    variant1: "Tom Ford Lost Cherry",
-    variant2: "-",
-    variant3: "-",
-    imageUrl: "../images/midnight-cherry.jpg",
+    imageUrl: "/images/midnight-cherry.jpg", // <--- PERBAIKI INI
   },
   {
     no: 4,
@@ -53,7 +47,7 @@ const perfumeData = [
     variant1: "Louis Vuitton Ombre Nomade",
     variant2: "-",
     variant3: "-",
-    imageUrl: "../images/oud-legendaire.jpg",
+    imageUrl: "/images/oud-legendaire.jpg", // <--- PERBAIKI INI
   },
   {
     no: 5,
@@ -66,7 +60,7 @@ const perfumeData = [
     variant1: "By Kilian Black Phantom",
     variant2: "-",
     variant3: "-",
-    imageUrl: "../images/or-du-soir.jpg",
+    imageUrl: "/images/or-du-soir.jpg", // <--- PERBAIKI INI
   },
 ];
 
