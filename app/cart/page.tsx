@@ -2,16 +2,233 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import Modal from "@/app/components/modal"; // Import komponen Modal kustom
-import { Product } from "@/app/data/products"; // Import dari file terpusat
+// Import Product dari file terpusat (sudah ada)
+// import { Product } from "@/app/data/products"; // Ini akan dihapus karena Product sudah didefinisikan di sini
 
-// Antarmuka untuk item di keranjang
+// Mendefinisikan interface untuk tipe data produk
+interface Product {
+  name: string;
+  description: string;
+  size: string;
+  price: string;
+  image: string;
+  isBestSeller: boolean;
+}
+
+// Data produk untuk ditampilkan (gambar diperbarui ke path lokal)
+const products: Product[] = [
+  {
+    name: "Midnight Cherry",
+    description: "Aroma buah, manis, menggoda, cocok untuk malam hari.",
+    size: "50ML",
+    price: "RP 299.000",
+    image: "/parfum/Midnight Cherry.jpg", // Path gambar lokal
+    isBestSeller: true,
+  },
+  {
+    name: "Ivory Bloom",
+    description: "Aroma floral, ringan, elegan, cocok untuk siang hari.",
+    size: "50ML",
+    price: "RP 299.000",
+    image: "/parfum/Ivory Bloom.jpg", // Path gambar lokal
+    isBestSeller: false,
+  },
+  {
+    name: "Citrine Flame",
+    description: "Aroma citrus, segar, energik, cocok untuk aktivitas.",
+    size: "50ML",
+    price: "RP 299.000",
+    image: "/parfum/Citrine Flame.jpg", // Path gambar lokal
+    isBestSeller: true,
+  },
+  {
+    name: "Oud Legendaire",
+    description: "Aroma woody, kuat, mewah, cocok untuk acara formal.",
+    size: "50ML",
+    price: "RP 299.000",
+    image: "/parfum/Oud Legendaire.jpg", // Path gambar lokal
+    isBestSeller: false,
+  },
+  {
+    name: "Or du Soir",
+    description:
+      "Aroma oriental/spicy, sensual, eksotis, cocok untuk malam & pesta.",
+    size: "50ML",
+    price: "RP 299.000",
+    image: "/parfum/Or du Soir.jpg", // Path gambar lokal
+    isBestSeller: true,
+  },
+];
+
+// Interface untuk item di keranjang
 interface CartItem extends Product {
   quantity: number;
   selectedSize: string;
 }
 
-export default function CartPage() {
+// Interface untuk props komponen Modal
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+// Komponen Modal kustom
+const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <p className="text-center font-serif text-lg text-gray-800 mt-4">
+          {children}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Interface untuk props komponen ProductCard
+interface ProductCardProps {
+  product: Product;
+}
+
+// Komponen ProductCard
+const ProductCard = ({ product }: ProductCardProps) => {
+  const isComingSoon = product.name === "COMING SOON";
+
+  const handleCardClick = () => {
+    if (!isComingSoon) {
+      console.log(`Navigating to product detail for: ${product.name}`);
+      // Navigasi ke halaman detail produk dengan nama produk sebagai parameter URL
+      // Menggunakan window.location.href karena next/navigation/router tidak tersedia di sini
+      window.location.href = `/shop/detail-product?productName=${encodeURIComponent(
+        product.name
+      )}`;
+    }
+  };
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (!isComingSoon) {
+      const cartItems: CartItem[] = JSON.parse(
+        localStorage.getItem("cartItems") || "[]"
+      );
+      const existingItem = cartItems.find(
+        (item: CartItem) => item.name === product.name
+      );
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cartItems.push({
+          ...product,
+          quantity: 1,
+          selectedSize: "30ML",
+        });
+      }
+
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      console.log("Product added to cart:", product.name);
+      // Navigasi ke halaman keranjang
+      window.location.href = "/cart";
+    }
+  };
+
+  if (isComingSoon) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
+        <div className="w-full h-80 bg-gray-200 rounded-md flex items-center justify-center">
+          <span className="text-xl font-bold text-gray-500">COMING SOON</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <div className="relative">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-80 object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).onerror = null;
+            (e.target as HTMLImageElement).src =
+              "https://placehold.co/400x400/E5E7EB/9CA3AF?text=Product+Image";
+          }}
+        />
+        {product.isBestSeller && (
+          <div className="absolute top-4 left-4 bg-black text-white text-xs font-semibold px-2 py-1 rounded-full">
+            BEST-SELLER
+          </div>
+        )}
+      </div>
+
+      <div className="p-6 text-center flex-grow flex flex-col justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-1">
+            {product.name}
+          </h3>
+          <p className="text-sm text-gray-500 mb-2">{product.description}</p>
+          <p className="text-sm text-gray-400 mb-4">{product.size}</p>
+        </div>
+        <div>
+          <p className="text-2xl font-bold text-gray-900 mb-4">
+            {product.price}
+          </p>
+          <button
+            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-gray-700"
+            onClick={handleAddToCart}
+          >
+            ADD TO CART
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Interface untuk props komponen ProductGrid
+interface ProductGridProps {
+  products: Product[];
+}
+
+// Komponen ProductGrid
+const ProductGrid = ({ products }: ProductGridProps) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {products.map((product, index) => (
+        <ProductCard key={index} product={product} />
+      ))}
+    </div>
+  );
+};
+
+// Komponen utama CartPage
+const CartPage = () => {
   // State untuk menyimpan item di keranjang, kode promo, dan jumlah diskon
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [promoCode, setPromoCode] = useState<string>("");
@@ -110,25 +327,26 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 font-sans">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-serif font-bold text-center mb-12">
-          YOUR CART
-        </h1>
-        <div className="flex flex-col md:flex-row gap-12">
+    <div className="min-h-screen bg-white py-12 px-4 md:px-8 font-sans">
+      <div className="max-w-7xl mx-auto">
+        {/* Konten Utama Keranjang */}
+        <div className="flex flex-col lg:flex-row gap-12">
           {/* Kolom Kiri: Daftar Produk */}
-          <div className="md:w-2/3 space-y-6">
+          <div className="lg:w-2/3 space-y-8">
+            <h1 className="text-4xl font-serif font-bold text-center lg:text-left text-gray-800">
+              SHOPPING CART
+            </h1>
             {cartItems.length > 0 ? (
               cartItems.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-xl shadow-md p-6 flex flex-col sm:flex-row items-center gap-6"
+                  className="flex items-start gap-6 border-b border-gray-200 py-6"
                 >
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 w-24 h-24">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-24 h-24 object-cover rounded-lg"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).onerror = null;
                         (e.target as HTMLImageElement).src =
@@ -136,41 +354,35 @@ export default function CartPage() {
                       }}
                     />
                   </div>
-                  <div className="flex-grow flex flex-col sm:flex-row items-center justify-between w-full text-center sm:text-left">
-                    <div className="flex-grow mb-4 sm:mb-0">
-                      <h3 className="text-xl font-bold text-gray-800">
+                  {/* Product Details & Controls */}
+                  <div className="flex-grow flex justify-between items-start">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="text-xl font-serif text-gray-800">
                         {item.name}
                       </h3>
-                      <p className="text-md text-gray-500">
+                      <p className="text-sm text-gray-500">
                         {item.description}
                       </p>
-                      <p className="text-lg font-bold text-gray-900 mt-2">
-                        {getFormattedPrice(
-                          getUnitPrice(item.selectedSize) * item.quantity
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-                      {/* Opsi Ukuran */}
-                      <div className="flex space-x-2">
+                      {/* Opsi Ukuran - Dikembalikan */}
+                      <div className="flex space-x-2 mt-2">
                         {["30ML", "50ML"].map((size) => (
                           <button
                             key={size}
-                            className={`py-1 px-4 text-sm rounded-full border-2 ${
+                            onClick={() => handleSizeChange(index, size)}
+                            className={`py-1 px-3 text-xs rounded-full border-2 ${
                               item.selectedSize === size
                                 ? "bg-black text-white border-black"
                                 : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                             }`}
-                            onClick={() => handleSizeChange(index, size)}
                           >
                             {size}
                           </button>
                         ))}
                       </div>
-                      {/* Pengatur Kuantitas */}
-                      <div className="flex items-center space-x-2">
+                      {/* Pengatur Kuantitas - Dikembalikan */}
+                      <div className="flex items-center space-x-2 mt-2">
                         <button
-                          className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-md font-bold hover:bg-gray-300"
+                          className="w-8 h-8 flex items-center justify-center text-lg font-bold"
                           onClick={() =>
                             handleQuantityChange(index, "decrement")
                           }
@@ -181,7 +393,7 @@ export default function CartPage() {
                           {item.quantity}
                         </span>
                         <button
-                          className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-md font-bold hover:bg-gray-300"
+                          className="w-8 h-8 flex items-center justify-center text-lg font-bold"
                           onClick={() =>
                             handleQuantityChange(index, "increment")
                           }
@@ -190,31 +402,38 @@ export default function CartPage() {
                         </button>
                       </div>
                     </div>
-                    {/* Tombol Hapus */}
-                    <button
-                      className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                      onClick={() => handleRemoveItem(index)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                    {/* Price & Remove Button */}
+                    <div className="flex flex-col items-end gap-2 text-right">
+                      <button
+                        className="text-gray-400 hover:text-gray-700 transition-colors duration-200"
+                        onClick={() => handleRemoveItem(index)}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                      <p className="text-md font-bold text-gray-900 mt-2">
+                        {getFormattedPrice(
+                          getUnitPrice(item.selectedSize) * item.quantity
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center p-12 bg-white rounded-xl shadow-md">
+              <div className="text-center py-12">
                 <p className="text-xl text-gray-500">Keranjang Anda kosong.</p>
                 <Link
                   href="/shop"
@@ -227,18 +446,11 @@ export default function CartPage() {
           </div>
 
           {/* Kolom Kanan: Ringkasan Keranjang */}
-          <div className="md:w-1/3 bg-white rounded-xl shadow-md p-6 h-fit">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              ORDER SUMMARY
-            </h2>
+          <div className="lg:w-1/3 p-6 h-fit lg:sticky lg:top-24 self-start">
             <div className="space-y-4">
-              <div className="flex justify-between text-lg text-gray-600">
+              <div className="flex justify-between text-lg text-gray-600 font-serif">
                 <span>Subtotal</span>
                 <span>{getFormattedPrice(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-lg text-gray-600">
-                <span>Shipping</span>
-                <span>Calculated at checkout</span>
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-lg text-green-600 font-semibold">
@@ -246,27 +458,32 @@ export default function CartPage() {
                   <span>- {getFormattedPrice(discountAmount)}</span>
                 </div>
               )}
-              <div className="border-t border-gray-200 pt-4 flex justify-between text-xl font-bold">
-                <span>Total</span>
+              <div className="flex justify-between text-lg text-gray-600 font-serif">
+                <span>TOTAL</span>
                 <span>{getFormattedPrice(finalTotal)}</span>
               </div>
             </div>
 
+            <p className="text-sm text-gray-500 mt-2">
+              Tax and shipping costs will be calculated according to your
+              delivery address.
+            </p>
+
             <div className="mt-8">
-              <h3 className="text-lg font-bold text-gray-800 mb-2">
-                Enter promotion code
+              <h3 className="text-md text-gray-800 mb-2 font-serif">
+                ENTER PROMOTION CODE
               </h3>
-              <div className="flex space-x-2">
+              <div className="flex border-b border-gray-400 pb-2">
                 <input
                   type="text"
-                  className="flex-grow border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-900"
-                  placeholder="Promo Code"
+                  className="flex-grow bg-transparent focus:outline-none placeholder-gray-400 font-serif"
+                  placeholder=""
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
                 />
                 <button
                   onClick={handleApplyPromoCode}
-                  className="bg-gray-200 text-gray-800 font-semibold rounded-full px-4 py-2 hover:bg-gray-300 transition-colors duration-200"
+                  className="text-gray-800 font-semibold ml-2 text-sm"
                 >
                   APPLY
                 </button>
@@ -275,11 +492,19 @@ export default function CartPage() {
 
             <button
               onClick={handleCheckout}
-              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-full transition-colors duration-300 hover:bg-gray-700"
+              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-none transition-colors duration-300 hover:bg-gray-700 font-serif"
             >
-              CHECKOUT
+              PROCEED TO CHECKOUT
             </button>
           </div>
+        </div>
+
+        {/* Bagian Baru: Produk Rekomendasi */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-serif font-bold text-center text-gray-800 mb-8">
+            YOU MAY ALSO LIKE
+          </h2>
+          <ProductGrid products={products} />
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -287,4 +512,9 @@ export default function CartPage() {
       </Modal>
     </div>
   );
+};
+
+// Komponen utama yang akan dirender
+export default function App() {
+  return <CartPage />;
 }

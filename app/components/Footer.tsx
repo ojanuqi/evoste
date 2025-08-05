@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-[#E5E7EB] text-black p-8 font-sans">
+    <footer className="bg-[#1C1C1C] text-white p-8 font-sans">
       <div className="container mx-auto text-center">
         {/* Logo EVOSTE */}
 

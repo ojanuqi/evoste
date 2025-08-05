@@ -1,40 +1,22 @@
+"use client";
+
 // ====================================================================
 // file: app/page.tsx
 // ====================================================================
+
 // Impor komponen yang diperlukan
 import HeroSection from "./components/HeroSection";
 import VideoStories from "./components/VideoStories";
 import CommunityStories from "./components/CommunityStories";
 import ProductGrid from "./components/ProductGrid";
-import { Product } from "./components/ProductCard";
+import { products } from "./data/products"; // Menggunakan data produk dari file terpusat
 
 // Data produk unggulan
-const featuredProducts: Product[] = [
-  {
-    name: "MIDNIGHT CHERRY",
-    description: "Aroma buah, manis, menggoda",
-    size: "100ML",
-    price: "RP 350.000",
-    image: "/parfum/Midnight Cherry.jpg",
-    isBestSeller: true,
-  },
-  {
-    name: "OR DU SOIR",
-    description: "Aroma oriental, sensual, eksotis",
-    size: "50ML",
-    price: "RP 550.000",
-    image: "/parfum/Or du Soir.jpg",
-    isBestSeller: false,
-  },
-  {
-    name: "CITRINE FLAME",
-    description: "Aroma citrus, segar, energik",
-    size: "100ML",
-    price: "RP 286.000",
-    image: "/parfum/Citrine Flame.jpg",
-    isBestSeller: false,
-  },
-];
+const featuredProducts = products.filter((product) =>
+  ["MIDNIGHT CHERRY", "OR DU SOIR", "CITRINE FLAME"].includes(
+    product.name.toUpperCase()
+  )
+);
 
 export default function Home() {
   return (

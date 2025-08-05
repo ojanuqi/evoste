@@ -6,10 +6,10 @@ import Link from "next/link";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // isSearchOpen dan setIsSearchOpen telah dihapus
   const pathname = usePathname();
 
   const navLinks = [
+    { name: "HOME", href: "/" }, // Tambahkan tautan HOME
     { name: "SCENT STORYTELLING", href: "/scent-storytelling" },
     { name: "FIND YOUR SCENT", href: "/find-your-scent" },
     { name: "SHOP", href: "/shop" },
@@ -22,7 +22,9 @@ export default function Header() {
       {" "}
       {/* Tambahkan `relative` di sini */}
       {/* Baris Atas: Logo, Hamburger, dan Cart */}
-      <div className="flex justify-center items-center py-4 relative px-4 md:px-8">
+      <div className="flex justify-center items-center py-6 relative px-4 md:px-8">
+        {" "}
+        {/* Mengubah py-4 menjadi py-6 untuk menambah jarak atas dan bawah */}
         {/* Tombol Hamburger (Hanya Tampil di Layar Mobile) */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -30,7 +32,6 @@ export default function Header() {
         >
           {isMenuOpen ? "✕" : "☰"}
         </button>
-
         {/* Logo (TETAP DI TENGAH) - Diubah menjadi Link */}
         <Link href="/" className="flex flex-col items-center cursor-pointer">
           <h1 className="text-3xl font-bold font-serif">EVOSTE</h1>
@@ -38,7 +39,6 @@ export default function Header() {
             Your scent. Their memory. Forever.
           </p>
         </Link>
-
         {/* Tombol Cart (di posisi yang sama dengan Search sebelumnya) */}
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-sm">
           <Link href="/cart">
@@ -60,7 +60,7 @@ export default function Header() {
                   hover:text-gray-600 transition-colors duration-200 ease-in-out
                   ${
                     pathname === link.href
-                      ? "font-bold border-b-2 border-navy-900 pb-1"
+                      ? "font-bold border-b-2 border-navy-900 pb-4.5"
                       : ""
                   }
                 `}
