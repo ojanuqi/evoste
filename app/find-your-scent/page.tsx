@@ -2,39 +2,89 @@
 
 import { useState } from "react";
 
-// Data untuk pertanyaan kuis dan jawaban
+// Data untuk pertanyaan kuis dan jawaban (5 pertanyaan, 5 jawaban)
 const quizData = [
   {
-    question: "Apa aktivitas favorit Anda saat waktu luang?",
+    question: "Apa suasana yang paling Anda nikmati saat ini?",
     answers: [
-      { text: "Menjelajah kehidupan malam di kota", type: "Midnight Cherry" },
-      { text: "Berjalan-jalan di taman bunga", type: "Ivory Bloom" },
-      { text: "Berolahraga atau berpetualang", type: "Citrine Flame" },
-      { text: "Menghadiri acara formal atau bisnis", type: "Oud Legendaire" },
       {
-        text: "Nongkrong di tempat eksotis atau bar lounge",
-        type: "Or du Soir",
+        text: "Malam hari yang penuh dengan kehidupan",
+        type: "Midnight Cherry",
       },
+      { text: "Pagi yang cerah dan penuh kehangatan", type: "Ivory Bloom" },
+      {
+        text: "Siang hari yang energik dan penuh petualangan",
+        type: "Citrine Flame",
+      },
+      { text: "Sore hari yang tenang dan elegan", type: "Oud Legendaire" },
+      { text: "Suasana glamor di acara khusus", type: "Or du Soir" },
     ],
   },
   {
     question: "Gaya berpakaian Anda cenderung seperti apa?",
     answers: [
       { text: "Trendi dan berani tampil beda", type: "Midnight Cherry" },
-      { text: "Sederhana dan klasik", type: "Ivory Bloom" },
+      { text: "Sederhana, minimalis, dan klasik", type: "Ivory Bloom" },
       { text: "Sporty dan kasual", type: "Citrine Flame" },
-      { text: "Elegan dan eksklusif", type: "Oud Legendaire" },
-      { text: "Glamor dan misterius", type: "Or du Soir" },
+      { text: "Elegan, eksklusif, dan formal", type: "Oud Legendaire" },
+      { text: "Glamor, misterius, dan mewah", type: "Or du Soir" },
     ],
   },
   {
-    question: "Kapan waktu favorit Anda memakai parfum?",
+    question: "Apa jenis musik favorit Anda?",
     answers: [
-      { text: "Malam hari sebelum kencan", type: "Midnight Cherry" },
-      { text: "Pagi hari untuk kegiatan harian", type: "Ivory Bloom" },
-      { text: "Sepanjang hari saat beraktivitas", type: "Citrine Flame" },
-      { text: "Saat pertemuan atau event penting", type: "Oud Legendaire" },
-      { text: "Acara khusus seperti pesta atau konser", type: "Or du Soir" },
+      { text: "Pop, R&B, atau musik dansa", type: "Midnight Cherry" },
+      {
+        text: "Akustik, jazz, atau musik klasik yang menenangkan",
+        type: "Ivory Bloom",
+      },
+      { text: "Rock, hip-hop, atau EDM", type: "Citrine Flame" },
+      {
+        text: "Orchestra atau musik instrumental yang dramatis",
+        type: "Oud Legendaire",
+      },
+      { text: "Musik oriental, etnik, atau soul", type: "Or du Soir" },
+    ],
+  },
+  {
+    question: "Pilih aroma makanan atau minuman yang paling Anda suka?",
+    answers: [
+      {
+        text: "Aroma buah ceri, stroberi, atau buah-buahan manis",
+        type: "Midnight Cherry",
+      },
+      {
+        text: "Aroma teh hijau, bunga melati, atau chamomile",
+        type: "Ivory Bloom",
+      },
+      { text: "Aroma lemon, jeruk, atau mint", type: "Citrine Flame" },
+      {
+        text: "Aroma kopi, cokelat hitam, atau rempah-rempah",
+        type: "Oud Legendaire",
+      },
+      { text: "Aroma vanila, kayu manis, atau karamel", type: "Or du Soir" },
+    ],
+  },
+  {
+    question: "Apa tempat favorit Anda untuk berlibur?",
+    answers: [
+      { text: "Klub malam, bar, atau festival musik", type: "Midnight Cherry" },
+      {
+        text: "Taman bunga, kebun raya, atau pedesaan yang asri",
+        type: "Ivory Bloom",
+      },
+      {
+        text: "Pegunungan, pantai, atau tempat olahraga",
+        type: "Citrine Flame",
+      },
+      {
+        text: "Hotel mewah, galeri seni, atau restoran fine dining",
+        type: "Oud Legendaire",
+      },
+      {
+        text: "Resort eksotis, lounge, atau tempat liburan tropis",
+        type: "Or du Soir",
+      },
     ],
   },
 ];
@@ -44,55 +94,82 @@ const recommendations = {
   "Midnight Cherry": {
     name: "Midnight Cherry",
     description: "Aroma buah, manis, menggoda, cocok untuk malam hari.",
-    image: "/parfum/Midnight Cherry.png",
+    image: "/parfum/Midnight Cherry.jpg",
   },
   "Ivory Bloom": {
     name: "Ivory Bloom",
     description: "Aroma floral, ringan, elegan, cocok untuk siang hari.",
-    image: "/parfum/Ivory Bloom.png",
+    image: "/parfum/Ivory Bloom.jpg",
   },
   "Citrine Flame": {
     name: "Citrine Flame",
     description: "Aroma citrus, segar, energik, cocok untuk aktivitas.",
-    image: "/parfum/Citrine Flame.png",
+    image: "/parfum/Citrine Flame.jpg",
   },
   "Oud Legendaire": {
     name: "Oud Legendaire",
     description: "Aroma woody, kuat, mewah, cocok untuk acara formal.",
-    image: "/parfum/Oud Legendaire.png",
+    image: "/parfum/Oud Legendaire.jpg",
   },
   "Or du Soir": {
     name: "Or du Soir",
     description:
       "Aroma oriental/spicy, sensual, eksotis, cocok untuk malam & pesta.",
-    image: "/parfum/Or du Soir.png",
+    image: "/parfum/Or du Soir.jpg",
   },
 };
 
 export default function FindYourScentQuiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<{ [key: string]: number }>({});
-  // Mengubah tipe state 'result' menjadi array untuk menampung kemungkinan hasil seri
-  const [result, setResult] = useState<string[] | null>(null);
+  // State untuk menyimpan hasil akhir, hanya satu string atau null
+  const [result, setResult] = useState<string | null>(null);
+  // State untuk menyimpan riwayat jawaban dalam urutan
   const [history, setHistory] = useState<string[]>([]);
 
   const handleAnswerClick = (type: string) => {
-    // Menambahkan console.log untuk debugging
-    console.log(`Jawaban yang dipilih: ${type}`);
+    // Simpan jawaban ke riwayat
     setHistory((prevHistory) => [...prevHistory, type]);
+    // Tambahkan skor untuk jenis parfum yang dipilih
     setScores((prevScores) => ({
       ...prevScores,
       [type]: (prevScores[type] || 0) + 1,
     }));
 
+    // Pindah ke pertanyaan berikutnya
     if (currentQuestion < quizData.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      const uniqueAnswers = Array.from(new Set([...history, type]));
-      // Menambahkan console.log untuk debugging
-      console.log("Riwayat jawaban:", [...history, type]);
-      console.log("Jawaban unik:", uniqueAnswers);
-      setResult(uniqueAnswers.length > 0 ? uniqueAnswers : null);
+      // Logika penentuan hasil akhir (hanya satu produk)
+      const finalScores = { ...scores, [type]: (scores[type] || 0) + 1 };
+
+      let highestScore = 0;
+      let winners: string[] = [];
+
+      // Cari skor tertinggi dan semua produk yang memiliki skor tersebut
+      for (const key in finalScores) {
+        if (finalScores[key] > highestScore) {
+          highestScore = finalScores[key];
+          winners = [key];
+        } else if (finalScores[key] === highestScore) {
+          winners.push(key);
+        }
+      }
+
+      // Jika hanya ada satu pemenang, itu adalah hasilnya
+      if (winners.length === 1) {
+        setResult(winners[0]);
+      } else {
+        // Jika ada hasil seri, gunakan riwayat jawaban untuk menentukan pemenang
+        // Ambil produk yang pertama kali dipilih dari daftar pemenang seri
+        const tieBreakerWinner = history.find((item) => winners.includes(item));
+        if (tieBreakerWinner) {
+          setResult(tieBreakerWinner);
+        } else {
+          // Fallback jika tidak ada pemenang yang bisa ditentukan
+          setResult(null);
+        }
+      }
     }
   };
 
@@ -103,7 +180,6 @@ export default function FindYourScentQuiz() {
     setHistory([]);
   };
 
-  // Fungsi untuk kembali ke pertanyaan pertama (awal kuis)
   const handleBackToStart = () => {
     handleRestartQuiz();
   };
@@ -122,7 +198,6 @@ export default function FindYourScentQuiz() {
         {result ? (
           // Tampilan Hasil
           <div className="text-center">
-            {/* Tombol kembali yang hanya muncul setelah hasil ditemukan */}
             <button
               onClick={handleBackToStart}
               className="absolute top-4 left-4 flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-300"
@@ -143,8 +218,8 @@ export default function FindYourScentQuiz() {
             </button>
 
             <h3 className="text-2xl font-serif font-bold text-navy-900 mb-4">
-              Berdasarkan preferensi Anda, inilah {result.length} rekomendasi
-              parfum pilihan kami.
+              Berdasarkan preferensi Anda, inilah rekomendasi parfum pilihan
+              kami.
             </h3>
 
             {/* Display User Answers */}
@@ -154,7 +229,6 @@ export default function FindYourScentQuiz() {
               </h4>
               {history.map((answerType, index) => {
                 const question = quizData[index].question;
-                // Mencari teks jawaban dari type yang tersimpan di history
                 const answerText = quizData[index].answers.find(
                   (ans) => ans.type === answerType
                 )?.text;
@@ -170,29 +244,36 @@ export default function FindYourScentQuiz() {
             </div>
 
             <div className="flex flex-col items-center space-y-8">
-              {result.map((fragranceKey) => {
-                const recommendation =
-                  recommendations[fragranceKey as keyof typeof recommendations];
-                return (
-                  <div
-                    key={fragranceKey}
-                    className="flex flex-col items-center"
-                  >
-                    <img
-                      src={recommendation.image}
-                      alt={recommendation.name}
-                      className="mx-auto w-full max-w-sm h-auto mb-4"
-                    />
-                    <h4 className="text-3xl font-bold text-navy-900 mb-2">
-                      {recommendation.name}
-                    </h4>
-                    <p className="text-gray-700 mb-6">
-                      {recommendation.description}
-                    </p>
-                  </div>
-                );
-              })}
+              {/* Menampilkan satu produk hasil akhir */}
+              {result && (
+                <div className="flex flex-col items-center">
+                  <img
+                    src={
+                      recommendations[result as keyof typeof recommendations]
+                        .image
+                    }
+                    alt={
+                      recommendations[result as keyof typeof recommendations]
+                        .name
+                    }
+                    className="mx-auto w-full max-w-sm h-auto mb-4"
+                  />
+                  <h4 className="text-3xl font-bold text-navy-900 mb-2">
+                    {
+                      recommendations[result as keyof typeof recommendations]
+                        .name
+                    }
+                  </h4>
+                  <p className="text-gray-700 mb-6">
+                    {
+                      recommendations[result as keyof typeof recommendations]
+                        .description
+                    }
+                  </p>
+                </div>
+              )}
             </div>
+
             <div className="flex justify-center space-x-4">
               <button
                 onClick={handleRestartQuiz}

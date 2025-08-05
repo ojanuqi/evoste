@@ -1,30 +1,62 @@
+// ====================================================================
+// file: app/page.tsx
+// ====================================================================
+// Impor komponen yang diperlukan
 import HeroSection from "./components/HeroSection";
-import ProductCarousel from "./components/ProductCarousel";
-import VideoStories from "./components/VideoStories"; // Mengimpor komponen VideoStories
-import CommunityStories from "./components/CommunityStories"; // Mengimpor komponen CommunityStories yang baru
+import VideoStories from "./components/VideoStories";
+import CommunityStories from "./components/CommunityStories";
+import ProductGrid from "./components/ProductGrid";
+import { Product } from "./components/ProductCard";
+
+// Data produk unggulan
+const featuredProducts: Product[] = [
+  {
+    name: "MIDNIGHT CHERRY",
+    description: "Aroma buah, manis, menggoda",
+    size: "100ML",
+    price: "RP 350.000",
+    image: "/parfum/Midnight Cherry.jpg",
+    isBestSeller: true,
+  },
+  {
+    name: "OR DU SOIR",
+    description: "Aroma oriental, sensual, eksotis",
+    size: "50ML",
+    price: "RP 550.000",
+    image: "/parfum/Or du Soir.jpg",
+    isBestSeller: false,
+  },
+  {
+    name: "CITRINE FLAME",
+    description: "Aroma citrus, segar, energik",
+    size: "100ML",
+    price: "RP 286.000",
+    image: "/parfum/Citrine Flame.jpg",
+    isBestSeller: false,
+  },
+];
 
 export default function Home() {
   return (
     <main>
       <HeroSection />
 
-      {/* Bagian THE ESSENTIALS dengan Carousel */}
+      {/* Bagian THE ESSENTIALS dengan Grid Produk */}
       <section className="mt-16">
-        {/* Kontainer terpisah untuk judul agar tetap di tengah */}
         <div className="container mx-auto text-center mb-8">
           <h2 className="text-3xl font-serif font-bold">THE ESSENTIALS</h2>
         </div>
 
-        {/* Carousel tidak memiliki pembatas lebar */}
-        <div className="relative">
-          <ProductCarousel />
+        {/* Tampilan grid produk unggulan */}
+        <div className="relative max-w-6xl mx-auto px-4">
+          <ProductGrid products={featuredProducts} />
         </div>
       </section>
 
       {/* Bagian VIDEO STORIES */}
       <VideoStories />
 
-      {/* Bagian COMMUNITY STORIES (STATIS) */}
+      {/* Bagian COMMUNITY STORIES */}
       <CommunityStories />
     </main>
   );

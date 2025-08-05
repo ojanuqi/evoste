@@ -6,12 +6,12 @@ import Link from "next/link";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // isSearchOpen dan setIsSearchOpen telah dihapus
   const pathname = usePathname();
 
   const navLinks = [
     { name: "SCENT STORYTELLING", href: "/scent-storytelling" },
-    { name: "FIND YOUR SCENT (QUIZ)", href: "/find-your-scent" },
+    { name: "FIND YOUR SCENT", href: "/find-your-scent" },
     { name: "SHOP", href: "/shop" },
     { name: "COMMUNITY", href: "/community" },
     { name: "ABOUT EVOSTE", href: "/about-evoste" },
@@ -21,7 +21,7 @@ export default function Header() {
     <header className="bg-white text-navy-900 shadow-md relative">
       {" "}
       {/* Tambahkan `relative` di sini */}
-      {/* Baris Atas: Logo, Hamburger, dan Search */}
+      {/* Baris Atas: Logo, Hamburger, dan Cart */}
       <div className="flex justify-center items-center py-4 relative px-4 md:px-8">
         {/* Tombol Hamburger (Hanya Tampil di Layar Mobile) */}
         <button
@@ -39,51 +39,11 @@ export default function Header() {
           </p>
         </Link>
 
-        {/* Kontainer Pencarian (Responsive) */}
+        {/* Tombol Cart (di posisi yang sama dengan Search sebelumnya) */}
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-sm">
-          {/* Versi Mobile: Conditional Render Ikon atau Input */}
-          <div className="md:hidden">
-            {isSearchOpen ? (
-              // Menampilkan Input Pencarian dengan tombol tutup
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-8 pr-8 py-1 border rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-navy-900 w-40 transition-all duration-300 ease-in-out"
-                />
-                <img
-                  src="/icon-search.png"
-                  alt="Search"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4"
-                />
-                <button
-                  onClick={() => setIsSearchOpen(false)}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-navy-900"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              // Menampilkan Ikon Pencarian yang bisa diklik
-              <button onClick={() => setIsSearchOpen(true)}>
-                <img src="/icon-search.png" alt="Search" className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-
-          {/* Versi Desktop dari Kotak Pencarian */}
-          <div className="hidden md:block relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="pl-8 pr-2 py-1 border rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-navy-900"
-            />
-            <img
-              src="/icon-search.png"
-              alt="Search"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4"
-            />
-          </div>
+          <Link href="/cart">
+            <img src="/icon-cart.png" alt="Cart" className="w-5 h-5" />
+          </Link>
         </div>
       </div>
       {/* Navigasi Desktop (Tampil di Layar Besar) */}
