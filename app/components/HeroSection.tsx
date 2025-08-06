@@ -4,7 +4,7 @@ export default function HeroSection() {
   return (
     <div>
       {/* Container untuk Hero Image dengan tinggi yang responsif */}
-      <div className="h-[500px] md:h-[600px] w-full relative overflow-hidden">
+      <div className="h-[500px] md:h-[660px] w-full relative overflow-hidden">
         {/* Gambar Latar Belakang */}
         <img
           src="/hero.JPG" // Mengambil foto dari public/hero.JPG dengan kapitalisasi yang benar
