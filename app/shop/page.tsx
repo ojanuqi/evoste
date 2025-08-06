@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Product, products } from "../../app/data/products"; // Import dari file terpusat
+import { Product, products } from "@/app/data/products"; // Import dari file terpusat
 
 // Komponen untuk menampilkan satu kartu produk
 const ProductCard = ({ product }: { product: Product }) => {
@@ -49,7 +49,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   // Tampilan normal untuk produk
   return (
     <div
-      className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      className="flex flex-col bg-white shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer rounded-none" // Mengubah rounded-xl menjadi rounded-none
       onClick={handleCardClick}
     >
       <div className="relative">
@@ -70,20 +70,26 @@ const ProductCard = ({ product }: { product: Product }) => {
         )}
       </div>
 
-      <div className="p-6 text-center flex-grow flex flex-col justify-between">
+      <div className="p-6 text-left flex-grow flex flex-col justify-between">
+        {" "}
+        {/* Mengubah text-center menjadi text-left */}
         <div>
+          <p className="text-sm text-gray-400 mb-2">SUMMER LIMITED EDITION</p>{" "}
+          {/* Menambahkan teks "SUMMER LIMITED EDITION" */}
           <h3 className="text-xl font-bold text-gray-800 mb-1">
             {product.name}
           </h3>
-          <p className="text-sm text-gray-500 mb-1">{product.description}</p>
-          <p className="text-sm text-gray-400 mb-2">{product.size}</p>
+          <p className="text-sm text-gray-500 mb-2">{product.description}</p>{" "}
+          {/* Mengubah mb-1 menjadi mb-2 */}
+          <p className="text-sm text-gray-400 mb-4">{product.size}</p>{" "}
+          {/* Mengubah mb-2 menjadi mb-4 */}
         </div>
         <div>
           <p className="text-2xl font-bold text-gray-900 mb-4">
             {product.price}
           </p>
           <button
-            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-gray-700"
+            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-none transition-colors duration-300 hover:bg-gray-700" // Mengubah rounded-full menjadi rounded-none
             onClick={handleAddToCart}
           >
             ADD TO CART
@@ -115,6 +121,7 @@ export default function ShopPage() {
           <h1 className="text-4xl font-serif font-bold text-navy-900 mb-4">
             CHOOSE YOUR FRAGRANCE
           </h1>
+          <div className="flex justify-center items-center space-x-4 text-gray-600"></div>
         </header>
 
         {/* Komponen grid produk */}

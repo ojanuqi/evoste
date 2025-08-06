@@ -9,8 +9,8 @@ import Link from "next/link";
 interface Product {
   name: string;
   description: string;
-  size: string;
-  price: string;
+  size: string; // Properti size ini mungkin perlu diubah menjadi sizes: ProductSize[] jika data produk diubah
+  price: string; // Properti price ini mungkin perlu diubah jika menggunakan sizes
   image: string;
   isBestSeller: boolean;
 }
@@ -112,14 +112,13 @@ interface ProductCardProps {
   product: Product;
 }
 
-// Komponen ProductCard
+// Komponen ProductCard (untuk bagian "YOU MAY ALSO LIKE")
 const ProductCard = ({ product }: ProductCardProps) => {
   const isComingSoon = product.name === "COMING SOON";
 
   const handleCardClick = () => {
     if (!isComingSoon) {
       console.log(`Navigating to product detail for: ${product.name}`);
-      // Navigasi ke halaman detail produk dengan nama produk sebagai parameter URL
       // Menggunakan window.location.href karena next/navigation/router tidak tersedia di sini
       window.location.href = `/shop/detail-product?productName=${encodeURIComponent(
         product.name
@@ -143,7 +142,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         cartItems.push({
           ...product,
           quantity: 1,
-          selectedSize: "30ML",
+          selectedSize: "30ML", // Default size saat ditambahkan dari homepage
         });
       }
 
@@ -156,8 +155,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   if (isComingSoon) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
-        <div className="w-full h-80 bg-gray-200 rounded-md flex items-center justify-center">
+      <div className="bg-white rounded-none shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
+        <div className="w-full h-80 bg-gray-200 rounded-none flex items-center justify-center">
           <span className="text-xl font-bold text-gray-500">COMING SOON</span>
         </div>
       </div>
@@ -166,7 +165,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <div
-      className="flex flex-col bg-white rounded-xl shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      className="flex flex-col bg-white shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer rounded-none" // Mengubah rounded-xl menjadi rounded-none
       onClick={handleCardClick}
     >
       <div className="relative">
@@ -187,20 +186,26 @@ const ProductCard = ({ product }: ProductCardProps) => {
         )}
       </div>
 
-      <div className="p-6 text-center flex-grow flex flex-col justify-between">
+      <div className="p-6 text-left flex-grow flex flex-col justify-between">
+        {" "}
+        {/* Mengubah text-center menjadi text-left */}
         <div>
+          <p className="text-sm text-gray-400 mb-2">SUMMER LIMITED EDITION</p>{" "}
+          {/* Menambahkan teks "SUMMER LIMITED EDITION" */}
           <h3 className="text-xl font-bold text-gray-800 mb-1">
             {product.name}
           </h3>
-          <p className="text-sm text-gray-500 mb-2">{product.description}</p>
-          <p className="text-sm text-gray-400 mb-4">{product.size}</p>
+          <p className="text-sm text-gray-500 mb-2">{product.description}</p>{" "}
+          {/* Mengubah mb-1 menjadi mb-2 */}
+          <p className="text-sm text-gray-400 mb-4">{product.size}</p>{" "}
+          {/* Mengubah mb-2 menjadi mb-4 */}
         </div>
         <div>
           <p className="text-2xl font-bold text-gray-900 mb-4">
             {product.price}
           </p>
           <button
-            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-gray-700"
+            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-none transition-colors duration-300 hover:bg-gray-700" // Mengubah rounded-full menjadi rounded-none
             onClick={handleAddToCart}
           >
             ADD TO CART
@@ -334,19 +339,19 @@ const CartPage = () => {
           {/* Kolom Kiri: Daftar Produk */}
           <div className="lg:w-2/3 space-y-8">
             <h1 className="text-4xl font-serif font-bold text-center lg:text-left text-gray-800">
-              SHOPPING CART
+              SHOPPING CART {/* Mengubah "YOUR CART" menjadi "SHOPPING CART" */}
             </h1>
             {cartItems.length > 0 ? (
               cartItems.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-6 border-b border-gray-200 py-6"
+                  className="flex items-start gap-6 border-b border-gray-200 py-6 rounded-none" // Mengubah rounded-xl menjadi rounded-none
                 >
                   <div className="flex-shrink-0 w-24 h-24">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-none" // Mengubah rounded-lg menjadi rounded-none
                       onError={(e) => {
                         (e.target as HTMLImageElement).onerror = null;
                         (e.target as HTMLImageElement).src =
@@ -356,7 +361,9 @@ const CartPage = () => {
                   </div>
                   {/* Product Details & Controls */}
                   <div className="flex-grow flex justify-between items-start">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 text-left">
+                      {" "}
+                      {/* Menambahkan text-left */}
                       <h3 className="text-xl font-serif text-gray-800">
                         {item.name}
                       </h3>
@@ -446,7 +453,9 @@ const CartPage = () => {
           </div>
 
           {/* Kolom Kanan: Ringkasan Keranjang */}
-          <div className="lg:w-1/3 p-6 h-fit lg:sticky lg:top-24 self-start">
+          <div className="lg:w-1/3 p-6 h-fit lg:sticky lg:top-24 self-start bg-white shadow-md rounded-none">
+            {" "}
+            {/* Mengubah rounded-xl menjadi rounded-none */}
             <div className="space-y-4">
               <div className="flex justify-between text-lg text-gray-600 font-serif">
                 <span>Subtotal</span>
@@ -463,12 +472,10 @@ const CartPage = () => {
                 <span>{getFormattedPrice(finalTotal)}</span>
               </div>
             </div>
-
             <p className="text-sm text-gray-500 mt-2">
               Tax and shipping costs will be calculated according to your
               delivery address.
             </p>
-
             <div className="mt-8">
               <h3 className="text-md text-gray-800 mb-2 font-serif">
                 ENTER PROMOTION CODE
@@ -489,10 +496,9 @@ const CartPage = () => {
                 </button>
               </div>
             </div>
-
             <button
               onClick={handleCheckout}
-              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-none transition-colors duration-300 hover:bg-gray-700 font-serif"
+              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-none transition-colors duration-300 hover:bg-gray-700 font-serif" // Mengubah rounded-full menjadi rounded-none
             >
               PROCEED TO CHECKOUT
             </button>

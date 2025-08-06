@@ -110,7 +110,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.price}
           </p>
           <button
-            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-gray-700"
+            className="w-full bg-[#C9B37E]  text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-[#B9A567]"
             onClick={handleAddToCart}
           >
             ADD TO CART
