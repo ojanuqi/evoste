@@ -9,7 +9,7 @@ export default function DetailProductPage() {
   const router = useRouter();
   const productName = searchParams.get("productName");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>("30ML");
+  const [selectedSize, setSelectedSize] = useState<string>("30ML"); // Inisialisasi dengan string kosong
   const [quantity, setQuantity] = useState<number>(1);
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export default function DetailProductPage() {
     );
   }
 
+  // Fungsi untuk mendapatkan harga per unit berdasarkan ukuran yang dipilih
   const getUnitPrice = () => {
     if (selectedSize === "30ML") return 199000;
     if (selectedSize === "50ML") return 299000;
@@ -79,12 +80,14 @@ export default function DetailProductPage() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 font-sans">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Gambar */}
-        <div className="flex justify-center items-center">
+        {/* Kolom Kiri: Gambar Produk */}
+        {/* Menambahkan h-full pada div parent untuk memungkinkan gambar mengisi tinggi */}
+        <div className="flex justify-center items-center h-full">
           <img
             src={selectedProduct.image}
             alt={selectedProduct.name}
-            className="w-full max-w-md rounded-lg shadow-xl"
+            // Mengubah kelas agar gambar mengisi tinggi dan lebarnya menyesuaikan
+            className="w-full h-full object-cover rounded-lg shadow-xl"
             onError={(e) => {
               (e.target as HTMLImageElement).onerror = null;
               (e.target as HTMLImageElement).src =
@@ -93,7 +96,7 @@ export default function DetailProductPage() {
           />
         </div>
 
-        {/* Detail */}
+        {/* Kolom Kanan: Detail Produk */}
         <div className="flex flex-col justify-center text-center md:text-left">
           <h1 className="text-4xl font-serif font-bold text-gray-900 mb-2">
             {selectedProduct.name}
@@ -105,7 +108,7 @@ export default function DetailProductPage() {
             {getFormattedPrice(totalPrice)}
           </p>
 
-          {/* Ukuran */}
+          {/* Opsi Ukuran */}
           <div className="mb-6">
             <h4 className="text-xl font-bold text-gray-800 mb-2">
               Pilih Ukuran
@@ -114,9 +117,9 @@ export default function DetailProductPage() {
               {["30ML", "50ML"].map((size) => (
                 <button
                   key={size}
-                  className={`py-2 px-6 rounded-full border-2 ${
+                  className={`py-2 px-6 rounded-full border-2 transition-colors duration-200 ${
                     selectedSize === size
-                      ? "bg-black text-white border-black"
+                      ? "bg-[#C9B37E] text-white "
                       : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                   }`}
                   onClick={() => setSelectedSize(size)}
@@ -152,7 +155,7 @@ export default function DetailProductPage() {
           {/* Tombol */}
           <div>
             <button
-              className="w-full md:w-auto bg-black text-white text-lg font-semibold py-4 px-12 rounded-full hover:bg-gray-700"
+              className="w-full md:w-auto bg-[#C9B37E] text-white text-lg font-semibold py-4 px-12 rounded-full hover:bg-[#A89467]"
               onClick={handleAddToCart}
             >
               ADD TO CART
