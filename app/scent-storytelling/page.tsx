@@ -16,7 +16,7 @@ export default function ScentStorytellingPage() {
             <img
               src="/parfum/Ivory Bloom.jpg"
               alt="Ivory Bloom"
-              className="h-64 w-full object-cover rounded-lg shadow-md"
+              className="h-[400px] w-full object-cover rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/600x400/E5E7EB/9CA3AF?text=Ivory+Bloom";
@@ -47,7 +47,7 @@ export default function ScentStorytellingPage() {
             <img
               src="/parfum/Citrine Flame.jpg"
               alt="Citrine Flame"
-              className="h-64 w-full object-cover rounded-lg shadow-md"
+              className="h-[400px] w-full object-cover rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/600x400/E5E7EB/9CA3AF?text=Citrine+Flame";
@@ -60,7 +60,7 @@ export default function ScentStorytellingPage() {
             <img
               src="/parfum/Midnight Cherry.jpg"
               alt="Midnight Cherry"
-              className="h-64 w-full object-cover rounded-lg shadow-md"
+              className="h-[400px] w-full object-cover rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/600x400/E5E7EB/9CA3AF?text=Midnight+Cherry";
@@ -90,7 +90,7 @@ export default function ScentStorytellingPage() {
             <img
               src="/parfum/Oud Legendaire.jpg"
               alt="Oud Légendaire"
-              className="h-64 w-full object-cover rounded-lg shadow-md"
+              className="h-[400px] w-full object-cover rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/600x400/E5E7EB/9CA3AF?text=Oud+Legendaire";
@@ -103,7 +103,7 @@ export default function ScentStorytellingPage() {
             <img
               src="/parfum/Or du Soir.jpg"
               alt="Or du Soir"
-              className="h-64 w-full object-cover rounded-lg shadow-md"
+              className="h-[400px] w-full object-cover rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/600x400/E5E7EB/9CA3AF?text=Or+du+Soir";

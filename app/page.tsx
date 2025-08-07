@@ -26,7 +26,7 @@ export default function Home() {
       {/* Bagian THE ESSENTIALS dengan Grid Produk */}
       <section className="mt-16">
         <div className="container mx-auto text-center mb-8">
-          <h2 className="text-3xl font-serif font-bold">THE ESSENTIALS</h2>
+          <h2 className="text-3xl font-serif font-bold">BEST SELLER</h2>
         </div>
 
         {/* Tampilan grid produk unggulan */}

@@ -12,31 +12,28 @@ export default function Footer() {
           </p>
           <div className="flex flex-wrap justify-center items-center space-x-4 md:space-x-8 text-sm mt-4">
             <p className="flex items-center space-x-2">
-              <img src="/icon/package.svg" alt="MOQ" className="w-4 h-4" />
+              <img src="package.png" alt="MOQ" className="w-4 h-4" />
               <span>MOQ : 12 | 24 | 48 Pcs</span>
             </p>
             <p className="flex items-center space-x-2">
               <a href="#" className="flex items-center space-x-2">
-                <img
-                  src="/icon/whatsapp.svg"
-                  alt="WhatsApp"
-                  className="w-4 h-4"
-                />
+                <img src="/whatsapp.png" alt="WhatsApp" className="w-4 h-4" />
                 <span>(+62) 877-7774-5791</span>
               </a>
             </p>
             <p className="flex items-center space-x-2">
               <a href="#" className="flex items-center space-x-2">
-                <img
-                  src="/icon/instagram.svg"
-                  alt="Instagram"
-                  className="w-4 h-4"
-                />
+                <img src="instagram.png" alt="Instagram" className="w-4 h-4" />
                 <span>@evosteofficial</span>
               </a>
             </p>
             <p className="flex items-center space-x-2">
-              <img src="/icon/globe.svg" alt="Shipment" className="w-4 h-4" />
+              <img
+                src="/globe.png"
+                alt="Shipment"
+                className="w-4 h-4 filter invert"
+              />
+
               <span>Worldwide shipment</span>
             </p>
           </div>

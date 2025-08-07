@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
 
 // Data untuk pertanyaan kuis dan jawaban (5 pertanyaan, 5 jawaban)
 const quizData = [
@@ -122,31 +122,45 @@ const recommendations = {
 export default function FindYourScentQuiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<{ [key: string]: number }>({});
-  // State untuk menyimpan hasil akhir, hanya satu string atau null
+  // State to store the final result, only one string or null
   const [result, setResult] = useState<string | null>(null);
-  // State untuk menyimpan riwayat jawaban dalam urutan
+  // State to store answer history in order
   const [history, setHistory] = useState<string[]>([]);
+  // New state for image animation
+  const [showImageAnimation, setShowImageAnimation] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation when result is set
+    if (result) {
+      const timer = setTimeout(() => {
+        setShowImageAnimation(true);
+      }, 100); // Small delay to ensure render before animation
+      return () => clearTimeout(timer);
+    } else {
+      setShowImageAnimation(false); // Reset animation state when quiz restarts
+    }
+  }, [result]);
 
   const handleAnswerClick = (type: string) => {
-    // Simpan jawaban ke riwayat
+    // Save answer to history
     setHistory((prevHistory) => [...prevHistory, type]);
-    // Tambahkan skor untuk jenis parfum yang dipilih
+    // Add score for the selected perfume type
     setScores((prevScores) => ({
       ...prevScores,
       [type]: (prevScores[type] || 0) + 1,
     }));
 
-    // Pindah ke pertanyaan berikutnya
+    // Move to the next question
     if (currentQuestion < quizData.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Logika penentuan hasil akhir (hanya satu produk)
+      // Logic for determining the final result (only one product)
       const finalScores = { ...scores, [type]: (scores[type] || 0) + 1 };
 
       let highestScore = 0;
       let winners: string[] = [];
 
-      // Cari skor tertinggi dan semua produk yang memiliki skor tersebut
+      // Find the highest score and all products that have that score
       for (const key in finalScores) {
         if (finalScores[key] > highestScore) {
           highestScore = finalScores[key];
@@ -156,17 +170,17 @@ export default function FindYourScentQuiz() {
         }
       }
 
-      // Jika hanya ada satu pemenang, itu adalah hasilnya
+      // If there's only one winner, that's the result
       if (winners.length === 1) {
         setResult(winners[0]);
       } else {
-        // Jika ada hasil seri, gunakan riwayat jawaban untuk menentukan pemenang
-        // Ambil produk yang pertama kali dipilih dari daftar pemenang seri
+        // If there's a tie, use the answer history to determine the winner
+        // Take the first product selected from the tie-winner list
         const tieBreakerWinner = history.find((item) => winners.includes(item));
         if (tieBreakerWinner) {
           setResult(tieBreakerWinner);
         } else {
-          // Fallback jika tidak ada pemenang yang bisa ditentukan
+          // Fallback if no winner can be determined
           setResult(null);
         }
       }
@@ -178,6 +192,7 @@ export default function FindYourScentQuiz() {
     setScores({});
     setResult(null);
     setHistory([]);
+    // Animation state will be reset by useEffect when result becomes null
   };
 
   const handleBackToStart = () => {
@@ -196,7 +211,7 @@ export default function FindYourScentQuiz() {
         </p>
 
         {result ? (
-          // Tampilan Hasil
+          // Result Display
           <div className="text-center">
             <button
               onClick={handleBackToStart}
@@ -244,7 +259,7 @@ export default function FindYourScentQuiz() {
             </div>
 
             <div className="flex flex-col items-center space-y-8">
-              {/* Menampilkan satu produk hasil akhir */}
+              {/* Display one final product result */}
               {result && (
                 <div className="flex flex-col items-center">
                   <img
@@ -256,7 +271,12 @@ export default function FindYourScentQuiz() {
                       recommendations[result as keyof typeof recommendations]
                         .name
                     }
-                    className="mx-auto w-full max-w-sm h-auto mb-4"
+                    // Added animation classes
+                    className={`mx-auto w-full max-w-sm h-auto mb-4 transition-all duration-700 ease-out ${
+                      showImageAnimation
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-95"
+                    }`}
                   />
                   <h4 className="text-3xl font-bold text-navy-900 mb-2">
                     {
@@ -277,14 +297,15 @@ export default function FindYourScentQuiz() {
             <div className="flex justify-center space-x-4">
               <button
                 onClick={handleRestartQuiz}
-                className="bg-navy-900 text-white px-6 py-3 rounded-full font-bold hover:bg-gray-700 transition-colors duration-300"
+                // Updated button color
+                className="bg-[#C9B37E] text-white px-6 py-3 rounded-full font-bold hover:bg-[#A89467] transition-colors duration-300"
               >
                 Coba Lagi
               </button>
             </div>
           </div>
         ) : (
-          // Tampilan Pertanyaan
+          // Question Display
           <div className="text-center">
             <p className="text-gray-500 mb-8">
               QUESTION {currentQuestion + 1} / {quizData.length}
@@ -297,7 +318,8 @@ export default function FindYourScentQuiz() {
                 <button
                   key={index}
                   onClick={() => handleAnswerClick(answer.type)}
-                  className="w-full py-4 px-6 border border-gray-300 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors duration-200"
+                  // Updated button color
+                  className="w-full py-4 px-6 border border-[#C9B37E] rounded-lg text-lg font-medium bg-[#C9B37E] text-white hover:bg-[#A89467] hover:border-[#A89467] transition-colors duration-200"
                 >
                   {answer.text}
                 </button>

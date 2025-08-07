@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link"; // Import Link for navigation
 
-const stories = [
+const allStories = [
+  // Renamed to allStories to distinguish
   {
     title: "Midnight Cherry: Wangi Malam yang Menggoda",
     text: "Midnight Cherry ini wanginya enak banget, manis tapi nggak bikin eneg. Pas buat dipakai kalau mau keluar malam atau acara spesial. Banyak yang nanya pakai parfum apa!",
@@ -18,34 +20,27 @@ const stories = [
     text: "Suka banget sama Citrine Flame! Wanginya citrusy, segar, langsung bikin semangat. Cocok buat yang aktif dan suka wangi yang 'bangun' gitu. Recommended!",
     author: "Rio, 29 tahun – Bandung",
   },
-  {
-    title: "Oud Legendaire: Mewah dan Berkarakter",
-    text: "Oud Legendaire ini wanginya strong dan mewah. Cocok buat acara formal atau kalau mau tampil beda. Wangi oud-nya bener-bener berkelas dan tahan lama banget di kulit.",
-    author: "Andi, 35 tahun – Yogyakarta",
-  },
-  {
-    title: "Or du Soir: Sensual dan Memikat",
-    text: "Or du Soir ini wanginya unik, agak spicy tapi sensual. Kalau dipakai pas malam hari atau ke pesta, langsung jadi pusat perhatian. Bikin merasa lebih percaya diri dan misterius.",
-    author: "Maya, 31 tahun – Bali",
-  },
 ];
+
+// Only take the first 3 stories for display on this page
+const storiesToShow = allStories.slice(0, 3);
 
 export default function CommunityStories() {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
 
   const goToPrevious = () => {
     setCurrentStoryIndex((prevIndex) =>
-      prevIndex === 0 ? stories.length - 1 : prevIndex - 1
+      prevIndex === 0 ? storiesToShow.length - 1 : prevIndex - 1
     );
   };
 
   const goToNext = () => {
     setCurrentStoryIndex((prevIndex) =>
-      prevIndex === stories.length - 1 ? 0 : prevIndex + 1
+      prevIndex === storiesToShow.length - 1 ? 0 : prevIndex + 1
     );
   };
 
-  const currentStory = stories[currentStoryIndex];
+  const currentStory = storiesToShow[currentStoryIndex];
 
   return (
     <section className="container mx-auto mt-16 p-4 text-center">
@@ -68,6 +63,16 @@ export default function CommunityStories() {
         <button onClick={goToNext} className="text-2xl font-bold">
           →
         </button>
+      </div>
+
+      {/* Tautan Lihat Selengkapnya (bukan tombol) */}
+      <div className="mt-8">
+        <Link
+          href="/community"
+          className="inline-flex items-center text-gray-700 hover:underline hover:text-gray-900 transition-colors duration-300 font-semibold text-lg"
+        >
+          Lihat Selengkapnya <span className="ml-2">→</span>
+        </Link>
       </div>
     </section>
   );

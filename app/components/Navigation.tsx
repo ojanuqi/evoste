@@ -20,7 +20,6 @@ export default function Navigation() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // scroll hide/show
@@ -35,26 +34,15 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // cek login + JSON validity + mounted flag
+  // client-only flag
   useEffect(() => {
     setMounted(true);
-    const raw = localStorage.getItem("evoste-user");
-    if (raw) {
-      try {
-        JSON.parse(raw);
-        setIsLoggedIn(true);
-      } catch {
-        // kalau JSON error, anggap belum login
-        localStorage.removeItem("evoste-user");
-        setIsLoggedIn(false);
-      }
-    } else {
-      setIsLoggedIn(false);
-    }
   }, []);
 
-  // sebelum mount, kita default ke login
-  const profileHref = mounted && isLoggedIn ? "/profile" : "/login";
+  // setelah mount, baca langsung localStorage setiap render
+  const isLoggedIn = mounted && !!localStorage.getItem("evoste-user");
+
+  const profileHref = isLoggedIn ? "/profile" : "/login";
 
   return (
     <nav
