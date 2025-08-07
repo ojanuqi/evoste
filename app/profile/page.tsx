@@ -53,8 +53,11 @@ export default function ProfilePage() {
             <input
               type="text"
               value={user.firstName}
-              disabled
-              className="w-full border border-gray-300 p-3 bg-gray-100"
+              onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+              disabled={!isEditing}
+              className={`w-full border border-gray-300 p-3 ${
+                isEditing ? "" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -66,8 +69,11 @@ export default function ProfilePage() {
             <input
               type="text"
               value={user.lastName}
-              disabled
-              className="w-full border border-gray-300 p-3 bg-gray-100"
+              onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+              disabled={!isEditing}
+              className={`w-full border border-gray-300 p-3 ${
+                isEditing ? "" : "bg-gray-100"
+              }`}
             />
           </div>
 

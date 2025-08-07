@@ -173,7 +173,7 @@ export default function RegisterPage() {
           <p className="text-center text-sm text-gray-600 mt-6">
             Sudah Punya Akun?{" "}
             <Link
-              href="/profile/login" // Mengarahkan kembali ke halaman login
+              href="../login" // Mengarahkan kembali ke halaman login
               className="text-black font-semibold hover:underline"
             >
               Login di Sini!

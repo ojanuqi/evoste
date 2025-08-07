@@ -21,6 +21,7 @@ export default function Navigation() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [userData, setUserData] = useState<{ firstName?: string } | null>(null);
 
   // scroll hide/show
   useEffect(() => {
@@ -39,9 +40,18 @@ export default function Navigation() {
     setMounted(true);
   }, []);
 
-  // setelah mount, baca langsung localStorage setiap render
-  const isLoggedIn = mounted && !!localStorage.getItem("evoste-user");
+  // ambil user data dari localStorage
+  useEffect(() => {
+    if (mounted) {
+      const storedUser = localStorage.getItem("evoste-user");
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        setUserData(parsed);
+      }
+    }
+  }, [mounted]);
 
+  const isLoggedIn = mounted && !!localStorage.getItem("evoste-user");
   const profileHref = isLoggedIn ? "/profile" : "/login";
 
   return (
@@ -71,10 +81,15 @@ export default function Navigation() {
             <img src="/icon-cart.png" alt="Cart" className="w-5 h-5" />
           </Link>
         </li>
-        <li>
+        <li className="flex items-center space-x-2">
           <Link href={profileHref}>
             <img src="/icon-profile.png" alt="Account" className="w-5 h-5" />
           </Link>
+          {isLoggedIn && userData?.firstName && (
+            <span className="text-sm font-medium">
+              Hai, {userData.firstName}
+            </span>
+          )}
         </li>
       </ul>
 
@@ -123,13 +138,18 @@ export default function Navigation() {
               {link.name}
             </Link>
           ))}
-          <div className="flex space-x-4 mt-4">
+          <div className="flex items-center space-x-2 mt-4">
             <Link href="/cart" onClick={() => setIsOpen(false)}>
               <img src="/icon-cart.png" alt="Cart" className="w-5 h-5" />
             </Link>
             <Link href={profileHref} onClick={() => setIsOpen(false)}>
               <img src="/icon-profile.png" alt="Account" className="w-5 h-5" />
             </Link>
+            {isLoggedIn && userData?.firstName && (
+              <span className="text-sm font-medium">
+                Hai, {userData.firstName}
+              </span>
+            )}
           </div>
         </div>
       )}
