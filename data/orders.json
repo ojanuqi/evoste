@@ -1,0 +1,37 @@
+[
+  {
+    "id": "b61dd5b6-ea82-424c-ae0f-5f86566bd43f",
+    "userId": 1754390390611,
+    "items": [
+      {
+        "productId": 1,
+        "size": "30ml",
+        "quantity": 2,
+        "name": "Midnight Cherry",
+        "price": 199000,
+        "image": "/parfum/Midnight Cherry.png"
+      }
+    ],
+    "totalAmount": 398000,
+    "shippingAddress": "Jl. Mawar",
+    "paymentMethod": "qris",
+    "status": "paid",
+    "createdAt": "2025-08-05T13:46:47.796Z"
+  },
+  {
+    "id": 1754532399483,
+    "userId": 1754451220450,
+    "email": "kay@example.com",
+    "shippingAddress": "Jl. Testing No. 123",
+    "paymentMethod": "Transfer Bank",
+    "items": [
+      {
+        "productId": "Citrine Flame",
+        "size": "30ML",
+        "quantity": 1
+      }
+    ],
+    "createdAt": "2025-08-07T02:06:39.483Z",
+    "status": "Pending"
+  }
+]

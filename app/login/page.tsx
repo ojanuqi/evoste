@@ -2,19 +2,31 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+<<<<<<< HEAD
 import { useRouter } from "next/navigation"; // Import useRouter
+=======
+import { useRouter } from "next/navigation";
+>>>>>>> main
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
   const [message, setMessage] = useState(""); // State untuk pesan notifikasi
   const router = useRouter(); // Inisialisasi router
 
   const handleLogin = (e: React.FormEvent) => {
+=======
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+>>>>>>> main
     e.preventDefault();
     setMessage("");
 
     const storedUser = localStorage.getItem("evoste-user");
+<<<<<<< HEAD
     if (storedUser) {
       const user = JSON.parse(storedUser);
       if (email === user.email && password === user.password) {
@@ -27,6 +39,52 @@ export default function LoginPage() {
     }
 
     setMessage("Email atau kata sandi salah. Silakan coba lagi.");
+=======
+    let isLocalValid = false;
+
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (email === user.email && password === user.password) {
+        isLocalValid = true;
+      }
+    }
+
+    try {
+      // 🔹 Panggil BE untuk login & ambil token
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login gagal");
+
+      // 🔹 Simpan token dari BE
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // 🔹 Simpan user lama supaya logic lain nggak rusak
+      if (isLocalValid) {
+        setMessage("Login berhasil! Mengarahkan ke halaman utama...");
+      } else {
+        setMessage("Login backend berhasil! Redirect ke home...");
+      }
+
+      // 🔹 Redirect
+      setTimeout(() => router.push("/"), 1500);
+    } catch (err: any) {
+      // fallback ke logic lama kalau BE gagal
+      if (isLocalValid) {
+        setMessage("Login lokal berhasil! (Token tidak diperbarui)");
+        localStorage.setItem("token", "dummy-token-evoste");
+        setTimeout(() => router.push("/"), 1500);
+      } else {
+        setMessage(err.message || "Email atau password salah.");
+      }
+    }
+>>>>>>> main
   };
 
   return (
@@ -45,6 +103,7 @@ export default function LoginPage() {
           </p>
         </div>
 
+<<<<<<< HEAD
         {/* Form Login - diperlebar */}
         <div className="bg-white p-8 md:p-12 shadow-md rounded-none w-full max-w-2xl">
           <form onSubmit={handleLogin} className="space-y-6">
@@ -53,6 +112,15 @@ export default function LoginPage() {
               <div
                 className={`px-4 py-3 rounded-none relative text-sm text-center ${
                   message.includes("berhasil")
+=======
+        {/* Form Login */}
+        <div className="bg-white p-8 md:p-12 shadow-md rounded-none w-full max-w-2xl">
+          <form onSubmit={handleLogin} className="space-y-6">
+            {message && (
+              <div
+                className={`px-4 py-3 rounded-none relative text-sm text-center ${
+                  message.toLowerCase().includes("berhasil")
+>>>>>>> main
                     ? "bg-green-100 border border-green-400 text-green-700"
                     : "bg-red-100 border border-red-400 text-red-700"
                 }`}
@@ -61,7 +129,10 @@ export default function LoginPage() {
               </div>
             )}
 
+<<<<<<< HEAD
             {/* Email Input */}
+=======
+>>>>>>> main
             <div>
               <label
                 htmlFor="email"
@@ -80,7 +151,10 @@ export default function LoginPage() {
               />
             </div>
 
+<<<<<<< HEAD
             {/* Password Input */}
+=======
+>>>>>>> main
             <div>
               <label
                 htmlFor="password"
@@ -99,7 +173,10 @@ export default function LoginPage() {
               />
             </div>
 
+<<<<<<< HEAD
             {/* Login Button */}
+=======
+>>>>>>> main
             <button
               type="submit"
               className="w-full bg-[#C9B37E] text-white text-lg font-semibold py-3 rounded-none hover:bg-[#A89467] transition-colors duration-300"
@@ -108,25 +185,38 @@ export default function LoginPage() {
             </button>
           </form>
 
+<<<<<<< HEAD
           {/* Link Daftar */}
           <p className="text-center text-sm text-gray-600 mt-6">
             Belum Punya Akun?{" "}
             <Link
               href="/daftar" // Mengarahkan ke halaman pendaftaran
+=======
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Belum Punya Akun?{" "}
+            <Link
+              href="/daftar"
+>>>>>>> main
               className="text-black font-semibold hover:underline"
             >
               Daftar di Sini!
             </Link>
           </p>
 
+<<<<<<< HEAD
           {/* Separator */}
+=======
+>>>>>>> main
           <div className="flex items-center my-6">
             <hr className="flex-grow border-t border-gray-300" />
             <span className="px-4 text-gray-500 text-sm">Atau</span>
             <hr className="flex-grow border-t border-gray-300" />
           </div>
 
+<<<<<<< HEAD
           {/* Sign With Google Button */}
+=======
+>>>>>>> main
           <button className="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 font-semibold py-3 rounded-none hover:bg-gray-50 transition-colors duration-300">
             <img
               src="https://www.google.com/favicon.ico"

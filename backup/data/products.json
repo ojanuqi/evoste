@@ -1,0 +1,20 @@
+[
+  {
+    "productId": 1,
+    "name": "Midnight Cherry",
+    "image": "/parfum/Midnight Cherry.jpg",
+    "sizes": [
+      { "size": "30ML", "price": 199000 },
+      { "size": "50ML", "price": 299000 }
+    ]
+  },
+  {
+    "productId": 2,
+    "name": "Ivory Bloom",
+    "image": "/parfum/Ivory Bloom.jpg",
+    "sizes": [
+      { "size": "30ML", "price": 199000 },
+      { "size": "50ML", "price": 299000 }
+    ]
+  }
+]

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { addToCart } from "@/lib/cartApi";
 // Import Product dari file terpusat (sudah ada)
 // import { Product } from "@/app/data/products"; // Ini akan dihapus karena Product sudah didefinisikan di sini
 
@@ -14,6 +15,7 @@ interface Product {
   image: string;
   isBestSeller: boolean;
 }
+
 
 // Data produk untuk ditampilkan (gambar diperbarui ke path lokal)
 const products: Product[] = [
@@ -126,16 +128,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
   };
 
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!isComingSoon) {
-      const cartItems: CartItem[] = JSON.parse(
-        localStorage.getItem("cartItems") || "[]"
-      );
-      const existingItem = cartItems.find(
-        (item: CartItem) => item.name === product.name
-      );
+const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.stopPropagation();
+  if (!isComingSoon) {
+    const cartItems: CartItem[] = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    const existingItem = cartItems.find((item) => item.name === product.name);
 
+<<<<<<< HEAD
       if (existingItem) {
         existingItem.quantity += 1;
       } else {
@@ -150,8 +149,22 @@ const ProductCard = ({ product }: ProductCardProps) => {
       console.log("Product added to cart:", product.name);
       // Navigasi ke halaman keranjang
       window.location.href = "/cart";
+=======
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cartItems.push({ ...product, quantity: 1, selectedSize: "30ML" });
+>>>>>>> main
     }
-  };
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+    // Panggil API addToCart
+    await addToCart({ ...product, quantity: 1, selectedSize: "30ML" }, localStorage.getItem("token"));
+
+    window.location.href = "/cart";
+  }
+};
 
   if (isComingSoon) {
     return (
@@ -235,6 +248,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
 // Komponen utama CartPage
 const CartPage = () => {
   // State untuk menyimpan item di keranjang, kode promo, dan jumlah diskon
+  const [token, setToken] = useState<string | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [promoCode, setPromoCode] = useState<string>("");
   const [discountAmount, setDiscountAmount] = useState<number>(0);
@@ -242,10 +256,74 @@ const CartPage = () => {
   const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
-    // Ambil item dari localStorage saat komponen dimuat
-    const savedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    setCartItems(savedCart);
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      setToken(storedToken);
+    }
   }, []);
+
+  const api = {
+  addToCart: async (item: CartItem) => {
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          name: item.name,
+          selectedSize: item.selectedSize,
+          quantity: item.quantity,
+        }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("API addToCart error:", err);
+      return false;
+    }
+  },
+  updateCartItem: async (item: CartItem) => {
+    try {
+      const res = await fetch("/api/cart", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          name: item.name,
+          selectedSize: item.selectedSize,
+          quantity: item.quantity,
+        }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("API updateCartItem error:", err);
+      return false;
+    }
+  },
+  removeCartItem: async (name: string, selectedSize: string) => {
+    try {
+      const res = await fetch("/api/cart", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          name,
+          selectedSize,
+        }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("API removeCartItem error:", err);
+      return false;
+    }
+  },
+};
+
 
   // Fungsi untuk memperbarui item di keranjang dan localStorage
   const updateCart = (updatedItems: CartItem[]) => {
@@ -254,34 +332,35 @@ const CartPage = () => {
   };
 
   // Fungsi untuk mengubah kuantitas item
-  const handleQuantityChange = (
-    index: number,
-    type: "increment" | "decrement"
-  ) => {
-    const updatedItems = [...cartItems];
-    if (type === "increment") {
-      updatedItems[index].quantity += 1;
-    } else {
-      updatedItems[index].quantity = Math.max(
-        1,
-        updatedItems[index].quantity - 1
-      );
-    }
-    updateCart(updatedItems);
-  };
+const handleQuantityChange = async (
+  index: number,
+  type: "increment" | "decrement"
+) => {
+  const updatedItems = [...cartItems];
+  if (type === "increment") {
+    updatedItems[index].quantity += 1;
+  } else {
+    updatedItems[index].quantity = Math.max(1, updatedItems[index].quantity - 1);
+  }
+  updateCart(updatedItems);
+  await api.updateCartItem(updatedItems[index]);
+};
 
   // Fungsi untuk menghapus item dari keranjang
-  const handleRemoveItem = (index: number) => {
-    const updatedItems = cartItems.filter((_, i) => i !== index);
-    updateCart(updatedItems);
-  };
+const handleRemoveItem = async (index: number) => {
+  const removedItem = cartItems[index];
+  const updatedItems = cartItems.filter((_, i) => i !== index);
+  updateCart(updatedItems);
+  await api.removeCartItem(removedItem.name, removedItem.selectedSize);
+};
 
   // Fungsi untuk mengubah ukuran produk
-  const handleSizeChange = (index: number, size: string) => {
-    const updatedItems = [...cartItems];
-    updatedItems[index].selectedSize = size;
-    updateCart(updatedItems);
-  };
+const handleSizeChange = async (index: number, size: string) => {
+  const updatedItems = [...cartItems];
+  updatedItems[index].selectedSize = size;
+  updateCart(updatedItems);
+  await api.updateCartItem(updatedItems[index]);
+};
 
   // Fungsi untuk mendapatkan harga per unit berdasarkan ukuran
   const getUnitPrice = (size: string) => {
