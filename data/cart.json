@@ -1,17 +1,10 @@
 [
   {
     "userId": 1,
-    "items": [
-      {
-        "productId": 1,
-        "size": "50ML",
-        "quantity": 6
-      },
-      {
-        "productId": 1,
-        "size": "30ML",
-        "quantity": 7
-      }
-    ]
+    "items": []
+  },
+  {
+    "userId": 1754451220450,
+    "items": []
   }
 ]

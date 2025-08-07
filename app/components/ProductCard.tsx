@@ -5,9 +5,10 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
-// Mendefinisikan interface untuk tipe data produk agar konsisten
 export interface Product {
+  productId?: number; // penting untuk backend
   name: string;
   description: string;
   size: string;
@@ -16,63 +17,48 @@ export interface Product {
   isBestSeller: boolean;
 }
 
-// Export default komponen ProductCard
 export default function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
   const isComingSoon = product.name === "COMING SOON";
 
-  // Fungsi untuk menangani klik pada kartu produk
   const handleCardClick = () => {
     if (!isComingSoon) {
-      // Navigasi ke halaman detail produk dengan nama produk sebagai parameter URL
       router.push(
         `/shop/detail-product?productName=${encodeURIComponent(product.name)}`
       );
     }
   };
 
-  // Fungsi untuk menangani klik pada tombol "Add to cart"
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Mencegah event klik memicu handleCardClick
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (isComingSoon) return;
 
-    if (!isComingSoon) {
-      // Dapatkan data keranjang yang ada atau inisialisasi array kosong
-      const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    // 1️⃣ Simpan ke localStorage dulu
+    const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    const existingItem = cartItems.find((item: any) => item.name === product.name);
 
-      // Periksa apakah produk sudah ada di keranjang
-      const existingItem = cartItems.find(
-        (item: any) => item.name === product.name
-      );
-
-      if (existingItem) {
-        // Jika produk sudah ada, tambahkan kuantitasnya
-        existingItem.quantity += 1;
-      } else {
-        // Jika produk belum ada, tambahkan produk baru ke keranjang
-        cartItems.push({
-          ...product,
-          quantity: 1,
-          selectedSize: "30ML", // Default size saat ditambahkan dari homepage
-        });
-      }
-
-      // Simpan data keranjang yang diperbarui ke localStorage
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-
-      // Navigasi ke halaman keranjang
-      router.push("/cart");
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cartItems.push({
+        ...product,
+        quantity: 1,
+        selectedSize: "30ML",
+      });
     }
-  };
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
-  if (isComingSoon) {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
-        <div className="w-full h-80 bg-gray-200 rounded-md flex items-center justify-center">
-          <span className="text-xl font-bold text-gray-500">COMING SOON</span>
-        </div>
-      </div>
-    );
-  }
+    // 2️⃣ Sync ke backend
+    try {
+      await api.addToCart(product.productId || cartItems.length, "30ML", 1);
+      console.log("Item berhasil ditambahkan ke server cart");
+    } catch (err: any) {
+      console.error("Gagal sync ke server:", err.message);
+    }
+
+    // 3️⃣ Redirect ke cart page
+    router.push("/cart");
+  };
 
   return (
     <div
@@ -85,7 +71,6 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           className="w-full h-80 object-cover"
           onError={(e) => {
-            (e.target as HTMLImageElement).onerror = null;
             (e.target as HTMLImageElement).src =
               "https://placehold.co/400x400/E5E7EB/9CA3AF?text=Product+Image";
           }}
@@ -99,16 +84,12 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="p-6 text-center flex-grow flex flex-col justify-between">
         <div>
-          <h3 className="text-xl font-bold text-gray-800 mb-1">
-            {product.name}
-          </h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-1">{product.name}</h3>
           <p className="text-sm text-gray-500 mb-2">{product.description}</p>
           <p className="text-sm text-gray-400 mb-4">{product.size}</p>
         </div>
         <div>
-          <p className="text-2xl font-bold text-gray-900 mb-4">
-            {product.price}
-          </p>
+          <p className="text-2xl font-bold text-gray-900 mb-4">{product.price}</p>
           <button
             className="w-full bg-[#C9B37E]  text-white text-lg font-semibold py-3 rounded-full transition-colors duration-300 hover:bg-[#B9A567]"
             onClick={handleAddToCart}

@@ -19,6 +19,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 
   // baca body sekali saja
   const text = await res.text();
+  console.log("[API RESPONSE]", path, res.status, text);
 
   if (!res.ok) {
     try {
@@ -36,15 +37,32 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 export const api = {
   getProducts: () => apiFetch("/products"),
   getCart: () => apiFetch("/cart"),
-  addToCart: (productId: number, size: string, quantity: number) =>
+
+addToCart: (productId: number, size: string, quantity: number) => {
+  console.log("Adding to server cart:", { productId, size, quantity }); // ⬅️ Tambahkan ini
+  return apiFetch("/cart", {
+    method: "POST",
+    body: JSON.stringify({ productId, size, quantity }),
+  });
+},
+
+  updateCartItem: (productId: number, size: string, quantity: number) =>
     apiFetch("/cart", {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({ productId, size, quantity }),
     }),
+
+  removeCartItem: (productId: number, size: string) =>
+    apiFetch("/cart", {
+      method: "DELETE",
+      body: JSON.stringify({ productId, size }),
+    }),
+
   checkout: (shippingAddress: string, paymentMethod: string) =>
     apiFetch("/checkout", {
       method: "POST",
       body: JSON.stringify({ shippingAddress, paymentMethod }),
     }),
+
   getOrder: (id: string) => apiFetch(`/orders/${id}`),
 };
