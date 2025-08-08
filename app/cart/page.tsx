@@ -2,15 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-// Import Product dari file terpusat (sudah ada)
-// import { Product } from "@/app/data/products"; // Ini akan dihapus karena Product sudah didefinisikan di sini
 
 // Mendefinisikan interface untuk tipe data produk
 interface Product {
   name: string;
   description: string;
-  size: string; // Properti size ini mungkin perlu diubah menjadi sizes: ProductSize[] jika data produk diubah
-  price: string; // Properti price ini mungkin perlu diubah jika menggunakan sizes
+  size: string;
+  price: string;
   image: string;
   isBestSeller: boolean;
 }
@@ -107,172 +105,65 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   );
 };
 
-// Interface untuk props komponen ProductCard
-interface ProductCardProps {
-  product: Product;
-}
-
-// Komponen ProductCard (untuk bagian "YOU MAY ALSO LIKE")
-const ProductCard = ({ product }: ProductCardProps) => {
-  const isComingSoon = product.name === "COMING SOON";
-
-  const handleCardClick = () => {
-    if (!isComingSoon) {
-      console.log(`Navigating to product detail for: ${product.name}`);
-      // Menggunakan window.location.href karena next/navigation/router tidak tersedia di sini
-      window.location.href = `/shop/detail-product?productName=${encodeURIComponent(
-        product.name
-      )}`;
-    }
-  };
-
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!isComingSoon) {
-      const cartItems: CartItem[] = JSON.parse(
-        localStorage.getItem("cartItems") || "[]"
-      );
-      const existingItem = cartItems.find(
-        (item: CartItem) => item.name === product.name
-      );
-
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cartItems.push({
-          ...product,
-          quantity: 1,
-          selectedSize: "30ML", // Default size saat ditambahkan dari homepage
-        });
-      }
-
-      localStorage.setItem("cartItems", JSON.stringify(cartItems));
-      console.log("Product added to cart:", product.name);
-      // Navigasi ke halaman keranjang
-      window.location.href = "/cart";
-    }
-  };
-
-  if (isComingSoon) {
-    return (
-      <div className="bg-white rounded-none shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
-        <div className="w-full h-80 bg-gray-200 rounded-none flex items-center justify-center">
-          <span className="text-xl font-bold text-gray-500">COMING SOON</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="flex flex-col bg-white shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer rounded-none" // Mengubah rounded-xl menjadi rounded-none
-      onClick={handleCardClick}
-    >
-      <div className="relative">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-80 object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).onerror = null;
-            (e.target as HTMLImageElement).src =
-              "https://placehold.co/400x400/E5E7EB/9CA3AF?text=Product+Image";
-          }}
-        />
-        {product.isBestSeller && (
-          <div className="absolute top-4 left-4 bg-black text-white text-xs font-semibold px-2 py-1 rounded-full">
-            BEST-SELLER
-          </div>
-        )}
-      </div>
-
-      <div className="p-6 text-left flex-grow flex flex-col justify-between">
-        {" "}
-        {/* Mengubah text-center menjadi text-left */}
-        <div>
-          <p className="text-sm text-gray-400 mb-2">SUMMER LIMITED EDITION</p>{" "}
-          {/* Menambahkan teks "SUMMER LIMITED EDITION" */}
-          <h3 className="text-xl font-bold text-gray-800 mb-1">
-            {product.name}
-          </h3>
-          <p className="text-sm text-gray-500 mb-2">{product.description}</p>{" "}
-          {/* Mengubah mb-1 menjadi mb-2 */}
-          <p className="text-sm text-gray-400 mb-4">{product.size}</p>{" "}
-          {/* Mengubah mb-2 menjadi mb-4 */}
-        </div>
-        <div>
-          <p className="text-2xl font-bold text-gray-900 mb-4">
-            {product.price}
-          </p>
-          <button
-            className="w-full bg-black text-white text-lg font-semibold py-3 rounded-none transition-colors duration-300 hover:bg-gray-700" // Mengubah rounded-full menjadi rounded-none
-            onClick={handleAddToCart}
-          >
-            ADD TO CART
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Interface untuk props komponen ProductGrid
-interface ProductGridProps {
-  products: Product[];
-}
-
-// Komponen ProductGrid
-const ProductGrid = ({ products }: ProductGridProps) => {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-      {products.map((product, index) => (
-        <ProductCard key={index} product={product} />
-      ))}
-    </div>
-  );
-};
-
 // Komponen utama CartPage
 const CartPage = () => {
-  // State untuk menyimpan item di keranjang, kode promo, dan jumlah diskon
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [promoCode, setPromoCode] = useState<string>("");
-  const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
 
+  // Mendapatkan cart items dari localStorage atau API
   useEffect(() => {
-    // Ambil item dari localStorage saat komponen dimuat
-    const savedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    setCartItems(savedCart);
+    const fetchCart = async () => {
+      try {
+        const token = localStorage.getItem("authToken"); // Ambil token dari localStorage
+        const res = await fetch("/api/cart", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Kirim token untuk autentikasi
+          },
+        });
+
+        if (!res.ok) {
+          const savedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+          setCartItems(savedCart);
+        } else {
+          const data = await res.json();
+          setCartItems(data.items);
+        }
+      } catch (error) {
+        const savedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        setCartItems(savedCart);
+      }
+    };
+
+    fetchCart();
   }, []);
 
-  // Fungsi untuk memperbarui item di keranjang dan localStorage
+  // Mengupdate cartItems dan localStorage
   const updateCart = (updatedItems: CartItem[]) => {
     setCartItems(updatedItems);
-    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+    localStorage.setItem("cartItems", JSON.stringify(updatedItems)); // Simpan ke localStorage
+    // Kirim ke API
+    const token = localStorage.getItem("authToken");
+    fetch("/api/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+      },
+      body: JSON.stringify({ items: updatedItems }),
+    });
   };
 
   // Fungsi untuk mengubah kuantitas item
-  const handleQuantityChange = (
-    index: number,
-    type: "increment" | "decrement"
-  ) => {
+  const handleQuantityChange = (index: number, type: "increment" | "decrement") => {
     const updatedItems = [...cartItems];
     if (type === "increment") {
       updatedItems[index].quantity += 1;
-    } else {
-      updatedItems[index].quantity = Math.max(
-        1,
-        updatedItems[index].quantity - 1
-      );
+    } else if (type === "decrement") {
+      updatedItems[index].quantity = Math.max(1, updatedItems[index].quantity - 1);
     }
-    updateCart(updatedItems);
-  };
-
-  // Fungsi untuk menghapus item dari keranjang
-  const handleRemoveItem = (index: number) => {
-    const updatedItems = cartItems.filter((_, i) => i !== index);
     updateCart(updatedItems);
   };
 
@@ -283,32 +174,51 @@ const CartPage = () => {
     updateCart(updatedItems);
   };
 
-  // Fungsi untuk mendapatkan harga per unit berdasarkan ukuran
+  // Fungsi untuk menghapus item dari keranjang
+  const handleRemoveItem = (index: number) => {
+    const updatedItems = cartItems.filter((_, i) => i !== index);
+    updateCart(updatedItems);
+  };
+
+  // Fungsi untuk menambahkan item ke keranjang (Add to Cart)
+  const handleAddToCart = (product: Product) => {
+    const cartItems: CartItem[] = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    const existingItem = cartItems.find(
+      (item: CartItem) => item.name === product.name
+    );
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cartItems.push({
+        ...product,
+        quantity: 1,
+        selectedSize: "30ML", // Default size saat ditambahkan
+      });
+    }
+
+    updateCart(cartItems); // Update cart di localStorage dan API
+  };
+
+  // Menghitung subtotal
   const getUnitPrice = (size: string) => {
     if (size === "30ML") return 199000;
     if (size === "50ML") return 299000;
-    return 0; // Default price, should not happen
+    return 0;
   };
 
-  // Menggunakan useMemo untuk menghindari perhitungan ulang subtotal yang tidak perlu
   const subtotal = useMemo(() => {
-    return cartItems.reduce(
-      (total, item) => total + getUnitPrice(item.selectedSize) * item.quantity,
-      0
-    );
+    return cartItems.reduce((total, item) => total + getUnitPrice(item.selectedSize) * item.quantity, 0);
   }, [cartItems]);
 
   const getFormattedPrice = (price: number) => {
     return `RP ${price.toLocaleString("id-ID")}`;
   };
 
-  // Fungsi untuk menerapkan kode promo
   const handleApplyPromoCode = () => {
     if (promoCode.toLowerCase() === "diskon") {
       setDiscountAmount(100000);
-      setModalMessage(
-        "Kode promo berhasil diterapkan! Anda mendapatkan potongan harga RP 100,000."
-      );
+      setModalMessage("Kode promo berhasil diterapkan! Anda mendapatkan potongan harga RP 100,000.");
     } else {
       setDiscountAmount(0);
       setModalMessage("Kode promo tidak valid atau tidak ditemukan.");
@@ -316,124 +226,61 @@ const CartPage = () => {
     setIsModalOpen(true);
   };
 
-  // Hitung total akhir setelah diskon
   const finalTotal = Math.max(0, subtotal - discountAmount);
-
-  // Fungsi untuk checkout
-  const handleCheckout = () => {
-    console.log("Melakukan checkout dengan item:", cartItems);
-    console.log("Promo Code:", promoCode);
-    console.log("Total Akhir:", finalTotal);
-
-    setModalMessage(
-      "Proses checkout dimulai! Anda akan diarahkan ke halaman pembayaran."
-    );
-    setIsModalOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-white py-12 px-4 md:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
-        {/* Konten Utama Keranjang */}
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Kolom Kiri: Daftar Produk */}
           <div className="lg:w-2/3 space-y-8">
             <h1 className="text-4xl font-serif font-bold text-center lg:text-left text-gray-800">
-              SHOPPING CART {/* Mengubah "YOUR CART" menjadi "SHOPPING CART" */}
+              SHOPPING CART
             </h1>
             {cartItems.length > 0 ? (
               cartItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-6 border-b border-gray-200 py-6 rounded-none" // Mengubah rounded-xl menjadi rounded-none
-                >
+                <div key={index} className="flex items-start gap-6 border-b border-gray-200 py-6 rounded-none">
                   <div className="flex-shrink-0 w-24 h-24">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded-none" // Mengubah rounded-lg menjadi rounded-none
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).onerror = null;
-                        (e.target as HTMLImageElement).src =
-                          "https://placehold.co/96x96/E5E7EB/9CA3AF?text=Product";
-                      }}
-                    />
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-none" />
                   </div>
-                  {/* Product Details & Controls */}
                   <div className="flex-grow flex justify-between items-start">
                     <div className="flex flex-col gap-2 text-left">
-                      {" "}
-                      {/* Menambahkan text-left */}
-                      <h3 className="text-xl font-serif text-gray-800">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {item.description}
-                      </p>
-                      {/* Opsi Ukuran - Dikembalikan */}
+                      <h3 className="text-xl font-serif text-gray-800">{item.name}</h3>
+                      <p className="text-sm text-gray-500">{item.description}</p>
                       <div className="flex space-x-2 mt-2">
                         {["30ML", "50ML"].map((size) => (
                           <button
                             key={size}
                             onClick={() => handleSizeChange(index, size)}
-                            className={`py-1 px-3 text-xs rounded-full border-2 ${
-                              item.selectedSize === size
-                                ? "bg-black text-white border-black"
-                                : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                            }`}
+                            className={`py-1 px-3 text-xs rounded-full border-2 ${item.selectedSize === size ? "bg-black text-white border-black" : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
                           >
                             {size}
                           </button>
                         ))}
                       </div>
-                      {/* Pengatur Kuantitas - Dikembalikan */}
                       <div className="flex items-center space-x-2 mt-2">
                         <button
                           className="w-8 h-8 flex items-center justify-center text-lg font-bold"
-                          onClick={() =>
-                            handleQuantityChange(index, "decrement")
-                          }
+                          onClick={() => handleQuantityChange(index, "decrement")}
                         >
                           -
                         </button>
-                        <span className="text-md font-bold text-gray-800">
-                          {item.quantity}
-                        </span>
+                        <span className="text-md font-bold text-gray-800">{item.quantity}</span>
                         <button
                           className="w-8 h-8 flex items-center justify-center text-lg font-bold"
-                          onClick={() =>
-                            handleQuantityChange(index, "increment")
-                          }
+                          onClick={() => handleQuantityChange(index, "increment")}
                         >
                           +
                         </button>
                       </div>
                     </div>
-                    {/* Price & Remove Button */}
                     <div className="flex flex-col items-end gap-2 text-right">
-                      <button
-                        className="text-gray-400 hover:text-gray-700 transition-colors duration-200"
-                        onClick={() => handleRemoveItem(index)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
+                      <button className="text-gray-400 hover:text-gray-700 transition-colors duration-200" onClick={() => handleRemoveItem(index)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                       <p className="text-md font-bold text-gray-900 mt-2">
-                        {getFormattedPrice(
-                          getUnitPrice(item.selectedSize) * item.quantity
-                        )}
+                        {getFormattedPrice(getUnitPrice(item.selectedSize) * item.quantity)}
                       </p>
                     </div>
                   </div>
@@ -442,44 +289,29 @@ const CartPage = () => {
             ) : (
               <div className="text-center py-12">
                 <p className="text-xl text-gray-500">Keranjang Anda kosong.</p>
-                <Link
-                  href="/shop"
-                  className="mt-4 inline-block text-blue-500 hover:underline"
-                >
+                <Link href="/shop" className="mt-4 inline-block text-blue-500 hover:underline">
                   Mulai berbelanja
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Kolom Kanan: Ringkasan Keranjang */}
           <div className="lg:w-1/3 p-6 h-fit lg:sticky lg:top-24 self-start bg-white shadow-md rounded-none">
-            {" "}
-            {/* Mengubah rounded-xl menjadi rounded-none */}
             <div className="space-y-4">
               <div className="flex justify-between text-lg text-gray-600 font-serif">
                 <span>Subtotal</span>
                 <span>{getFormattedPrice(subtotal)}</span>
               </div>
-              {discountAmount > 0 && (
-                <div className="flex justify-between text-lg text-green-600 font-semibold">
-                  <span>Diskon</span>
-                  <span>- {getFormattedPrice(discountAmount)}</span>
-                </div>
-              )}
               <div className="flex justify-between text-lg text-gray-600 font-serif">
                 <span>TOTAL</span>
                 <span>{getFormattedPrice(finalTotal)}</span>
               </div>
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              Tax and shipping costs will be calculated according to your
-              delivery address.
+              Tax and shipping costs will be calculated according to your delivery address.
             </p>
             <div className="mt-8">
-              <h3 className="text-md text-gray-800 mb-2 font-serif">
-                ENTER PROMOTION CODE
-              </h3>
+              <h3 className="text-md text-gray-800 mb-2 font-serif">ENTER PROMOTION CODE</h3>
               <div className="flex border-b border-gray-400 pb-2">
                 <input
                   type="text"
@@ -497,22 +329,64 @@ const CartPage = () => {
               </div>
             </div>
             <button
-              onClick={handleCheckout}
-              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-none transition-colors duration-300 hover:bg-gray-700 font-serif" // Mengubah rounded-full menjadi rounded-none
+              onClick={() => {}}
+              className="w-full bg-black text-white text-lg font-semibold py-4 mt-8 rounded-none transition-colors duration-300 hover:bg-gray-700 font-serif"
             >
               PROCEED TO CHECKOUT
             </button>
           </div>
         </div>
 
-        {/* Bagian Baru: Produk Rekomendasi */}
         <div className="mt-20">
           <h2 className="text-3xl font-serif font-bold text-center text-gray-800 mb-8">
             YOU MAY ALSO LIKE
           </h2>
-          <ProductGrid products={products} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {products.map((product, index) => (
+              <div
+                key={index}
+                className="flex flex-col bg-white shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer rounded-none"
+              >
+                <div className="relative">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-80 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).onerror = null;
+                      (e.target as HTMLImageElement).src =
+                        "https://placehold.co/400x400/E5E7EB/9CA3AF?text=Product+Image";
+                    }}
+                  />
+                  {product.isBestSeller && (
+                    <div className="absolute top-4 left-4 bg-black text-white text-xs font-semibold px-2 py-1 rounded-full">
+                      BEST-SELLER
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-6 text-left flex-grow flex flex-col justify-between">
+                  <h3 className="text-xl font-bold text-gray-800 mb-1">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-2">{product.description}</p>
+                  <p className="text-sm text-gray-400 mb-4">{product.size}</p>
+                  <p className="text-2xl font-bold text-gray-900 mb-4">
+                    {product.price}
+                  </p>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-black text-white text-lg font-semibold py-3 rounded-none transition-colors duration-300 hover:bg-gray-700"
+                  >
+                    ADD TO CART
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {modalMessage}
       </Modal>
@@ -520,7 +394,4 @@ const CartPage = () => {
   );
 };
 
-// Komponen utama yang akan dirender
-export default function App() {
-  return <CartPage />;
-}
+export default CartPage;

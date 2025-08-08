@@ -10,24 +10,34 @@ export default function LoginPage() {
   const [message, setMessage] = useState(""); // State untuk pesan notifikasi
   const router = useRouter(); // Inisialisasi router
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setMessage("");
 
-    const storedUser = localStorage.getItem("evoste-user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (email === user.email && password === user.password) {
-        setMessage("Login berhasil! Mengarahkan ke halaman utama...");
-        setTimeout(() => {
-          router.push("/");
-        }, 2000);
-        return;
-      }
-    }
+  // Kirim email dan password ke backend untuk login
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-    setMessage("Email atau kata sandi salah. Silakan coba lagi.");
-  };
+  const data = await response.json();
+
+  if (data.token) {
+    // Simpan token yang valid ke localStorage setelah login berhasil
+    localStorage.setItem("authToken", data.token); // Simpan token dari backend
+
+    setMessage("Login berhasil! Mengarahkan ke halaman utama...");
+    setTimeout(() => {
+      router.push("/"); // Arahkan ke halaman utama setelah login berhasil
+    }, 2000);
+  } else {
+    setMessage(data.message || "Login failed");
+  }
+};
+
 
   return (
     <div

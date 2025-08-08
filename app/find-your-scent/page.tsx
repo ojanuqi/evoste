@@ -129,6 +129,28 @@ export default function FindYourScentQuiz() {
   // New state for image animation
   const [showImageAnimation, setShowImageAnimation] = useState(false);
 
+  const [quiz, setQuiz] = useState<any>(null); // Add state for quiz data
+  const [products, setProducts] = useState<any[]>([]); // Add state for products
+
+  useEffect(() => {
+    // Fetch quiz data
+    const fetchQuizData = async () => {
+      const response = await fetch("/api/quiz");
+      const data = await response.json();
+      setQuiz(data);
+    };
+
+    // Fetch products data
+    const fetchProducts = async () => {
+      const response = await fetch("/api/products");
+      const data = await response.json();
+      setProducts(data);
+    };
+
+    fetchQuizData();
+    fetchProducts();
+  }, []);
+
   useEffect(() => {
     // Trigger animation when result is set
     if (result) {
@@ -263,14 +285,8 @@ export default function FindYourScentQuiz() {
               {result && (
                 <div className="flex flex-col items-center">
                   <img
-                    src={
-                      recommendations[result as keyof typeof recommendations]
-                        .image
-                    }
-                    alt={
-                      recommendations[result as keyof typeof recommendations]
-                        .name
-                    }
+                    src={recommendations[result as keyof typeof recommendations].image}
+                    alt={recommendations[result as keyof typeof recommendations].name}
                     // Added animation classes
                     className={`mx-auto w-full max-w-sm h-auto mb-4 transition-all duration-700 ease-out ${
                       showImageAnimation
@@ -279,16 +295,10 @@ export default function FindYourScentQuiz() {
                     }`}
                   />
                   <h4 className="text-3xl font-bold text-navy-900 mb-2">
-                    {
-                      recommendations[result as keyof typeof recommendations]
-                        .name
-                    }
+                    {recommendations[result as keyof typeof recommendations].name}
                   </h4>
                   <p className="text-gray-700 mb-6">
-                    {
-                      recommendations[result as keyof typeof recommendations]
-                        .description
-                    }
+                    {recommendations[result as keyof typeof recommendations].description}
                   </p>
                 </div>
               )}
@@ -297,7 +307,6 @@ export default function FindYourScentQuiz() {
             <div className="flex justify-center space-x-4">
               <button
                 onClick={handleRestartQuiz}
-                // Updated button color
                 className="bg-[#C9B37E] text-white px-6 py-3 rounded-full font-bold hover:bg-[#A89467] transition-colors duration-300"
               >
                 Coba Lagi
@@ -318,7 +327,6 @@ export default function FindYourScentQuiz() {
                 <button
                   key={index}
                   onClick={() => handleAnswerClick(answer.type)}
-                  // Updated button color
                   className="w-full py-4 px-6 border border-[#C9B37E] rounded-lg text-lg font-medium bg-[#C9B37E] text-white hover:bg-[#A89467] hover:border-[#A89467] transition-colors duration-200"
                 >
                   {answer.text}

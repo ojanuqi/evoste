@@ -6,6 +6,9 @@ export interface Product {
   price: string;
   image: string;
   isBestSeller: boolean;
+  category?: string; // Menambahkan kategori produk untuk fitur rekomendasi (opsional)
+  stock?: number;    // Menambahkan stok produk jika diperlukan
+  rating?: number;   // Menambahkan rating untuk produk jika diperlukan
 }
 
 // Data produk untuk ditampilkan di halaman toko
@@ -17,6 +20,9 @@ export const products: Product[] = [
     price: "RP 299.000",
     image: "/parfum/Midnight Cherry.jpg",
     isBestSeller: true,
+    category: "Fruity",  // Kategori aroma, bisa digunakan untuk filter atau rekomendasi
+    stock: 50,           // Menambahkan stok produk
+    rating: 4.5,         // Rating produk, bisa digunakan untuk menampilkan ulasan
   },
   {
     name: "Ivory Bloom",
@@ -25,6 +31,9 @@ export const products: Product[] = [
     price: "RP 299.000",
     image: "/parfum/Ivory Bloom.jpg",
     isBestSeller: false,
+    category: "Floral",
+    stock: 40,
+    rating: 4.0,
   },
   {
     name: "Citrine Flame",
@@ -33,6 +42,9 @@ export const products: Product[] = [
     price: "RP 299.000",
     image: "/parfum/Citrine Flame.jpg",
     isBestSeller: true,
+    category: "Citrus",
+    stock: 60,
+    rating: 4.7,
   },
   {
     name: "Oud Legendaire",
@@ -41,6 +53,9 @@ export const products: Product[] = [
     price: "RP 299.000",
     image: "/parfum/Oud Legendaire.jpg",
     isBestSeller: false,
+    category: "Woody",
+    stock: 30,
+    rating: 4.2,
   },
   {
     name: "Or du Soir",
@@ -50,5 +65,8 @@ export const products: Product[] = [
     price: "RP 299.000",
     image: "/parfum/Or du Soir.jpg",
     isBestSeller: true,
+    category: "Spicy",
+    stock: 70,
+    rating: 4.8,
   },
 ];

@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState(""); // State untuk pesan notifikasi
   const router = useRouter(); // Inisialisasi router
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
 
@@ -22,31 +22,48 @@ export default function RegisterPage() {
       return;
     }
 
-    const newUser = { firstName, lastName, email, password };
+    const newUser = { firstName, lastName, email, password, confirmPassword };
+    console.log(newUser);
 
-    // Simpan ke localStorage
-    localStorage.setItem("evoste-user", JSON.stringify(newUser));
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
+      });
 
-    setMessage("Pendaftaran berhasil! Mengarahkan ke halaman login...");
-    setTimeout(() => {
-      router.push("/login");
-    }, 2000);
+      if (!res.ok) {
+        const errorData = await res.json();
+        setMessage(errorData.message || "Pendaftaran gagal!");
+        return;
+      }
+
+      const data = await res.json();
+      setMessage("Pendaftaran berhasil! Mengarahkan ke halaman login...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (error) {
+      setMessage("Terjadi kesalahan saat mendaftar. Silakan coba lagi.");
+    }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ backgroundColor: "#F8F5EF" }}
+    <div 
+    className="min-h-screen flex items-center justify-center" 
+    style={{ backgroundColor: "#F8F5EF" }}
     >
       <div className="flex flex-col items-center justify-center p-8 md:p-12 w-full">
         {/* Logo dan Tagline */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-serif font-bold text-gray-800">
             EVOSTE
-          </h1>
+            </h1>
           <p className="text-md italic font-sans mt-2 text-gray-700">
             Your scent. Their memory. Forever.
-          </p>
+            </p>
         </div>
 
         {/* Form Pendaftaran */}
@@ -67,12 +84,12 @@ export default function RegisterPage() {
 
             {/* First Name Input */}
             <div>
-              <label
-                htmlFor="firstName"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+              <label 
+              htmlFor="firstName" 
+              className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 First Name
-              </label>
+                </label>
               <input
                 type="text"
                 id="firstName"
@@ -86,12 +103,7 @@ export default function RegisterPage() {
 
             {/* Last Name Input */}
             <div>
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Last Name
-              </label>
+              <label htmlFor="lastName" className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
               <input
                 type="text"
                 id="lastName"
@@ -105,12 +117,7 @@ export default function RegisterPage() {
 
             {/* Email Input */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Email
-              </label>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
               <input
                 type="email"
                 id="email"
@@ -124,12 +131,7 @@ export default function RegisterPage() {
 
             {/* Password Input */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
               <input
                 type="password"
                 id="password"
@@ -143,12 +145,7 @@ export default function RegisterPage() {
 
             {/* Ulangi Password Input */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Ulangi Password
-              </label>
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">Ulangi Password</label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -172,10 +169,7 @@ export default function RegisterPage() {
           {/* Link Login */}
           <p className="text-center text-sm text-gray-600 mt-6">
             Sudah Punya Akun?{" "}
-            <Link
-              href="../login" // Mengarahkan kembali ke halaman login
-              className="text-black font-semibold hover:underline"
-            >
+            <Link href="../login" className="text-black font-semibold hover:underline">
               Login di Sini!
             </Link>
           </p>
